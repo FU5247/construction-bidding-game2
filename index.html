@@ -2,19 +2,19 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>入札ゲーム ver.141</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>入札ゲーム ver.145② </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
-        body { font-family: 'Noto Sans JP', sans-serif; background-color: #0f172a; }
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #f3f4f6; }
         
         .coin-flip { animation: flipCoin 1.5s ease-out forwards; }
         @keyframes flipCoin {
             0% { transform: rotateY(0deg) scale(1); }
-            50% { transform: rotateY(1080deg) scale(1.3); }
+            50% { transform: rotateY(1080deg) scale(1.5); }
             100% { transform: rotateY(2160deg) scale(1); }
         }
         .roulette { animation: spinRoulette 2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
@@ -22,24 +22,22 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(1440deg); } 
         }
-        .modal-bg { background-color: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); }
-        .slide-in { animation: slideIn 0.25s ease-out forwards; }
+        .modal-bg { background-color: rgba(0, 0, 0, 0.6); }
+        .slide-in { animation: slideIn 0.3s ease-out forwards; }
         @keyframes slideIn {
-            from { transform: translateY(-10px); opacity: 0; }
+            from { transform: translateY(-20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
         
-        .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
-        .custom-scroll::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
 
         input[type=range].custom-color-slider {
             -webkit-appearance: none;
             appearance: none;
-            background: #334155;
-            height: 10px;
-            border-radius: 5px;
+            background: #e2e8f0;
         }
         input[type=range].custom-color-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
@@ -50,7 +48,7 @@
             background: #ffffff;
             border: 3px solid #3b82f6;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
         input[type=range].custom-color-slider::-moz-range-thumb {
             width: 22px;
@@ -59,52 +57,56 @@
             background: #ffffff;
             border: 3px solid #3b82f6;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
+        /* 景気確率設定スライダー用カスタムスタイル */
         input[type=range].economy-slider {
             -webkit-appearance: none;
             appearance: none;
-            height: 10px;
-            border-radius: 5px;
+            height: 12px;
+            border-radius: 6px;
             outline: none;
-            background: #334155;
         }
         input[type=range].economy-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: #ffffff;
             border: 3px solid #475569;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            transition: transform 0.1s;
+        }
+        input[type=range].economy-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
         }
         input[type=range].economy-slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: #ffffff;
             border: 3px solid #475569;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
     </style>
 </head>
-<body class="text-slate-100 h-screen w-screen flex flex-col overflow-hidden select-none">
+<body class="text-gray-800 h-screen flex flex-col overflow-hidden">
 
-    <div id="welcome-modal" class="fixed inset-0 modal-bg flex justify-center items-center z-[100] p-3 slide-in">
-        <div class="bg-slate-900 border border-slate-700 p-4 sm:p-6 rounded-2xl shadow-2xl w-full max-w-lg relative border-t-8 border-blue-600 flex flex-col max-h-[95vh] overflow-y-auto custom-scroll">
-            <div class="text-center mb-4 shrink-0">
-                <span class="text-3xl sm:text-4xl mb-1 block">🏢</span>
-                <h2 class="text-xl sm:text-2xl font-black text-white">入札ゲームへようこそ</h2>
+    <div id="welcome-modal" class="fixed inset-0 modal-bg flex justify-center items-center z-[100] p-4 slide-in">
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-lg relative border-t-8 border-blue-600 flex flex-col">
+            <div class="text-center mb-6 shrink-0">
+                <span class="text-5xl mb-3 block">🏢</span>
+                <h2 class="text-2xl font-black text-slate-800">入札ゲームへようこそ</h2>
             </div>
-            <div class="space-y-3 text-slate-300 text-xs sm:text-sm">
-                <p class="font-bold text-center">あなたは<strong>「ゼネコン（元請業者）」</strong>の経営者です。</p>
-                <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 shadow-sm">
-                    <h3 class="font-black text-blue-400 mb-1.5 border-b border-slate-700 pb-1">📌 基本ルール</h3>
-                    <ul class="list-disc list-inside space-y-1 font-medium text-[11px] sm:text-xs">
+            <div class="space-y-4 text-slate-700 text-sm">
+                <p class="text-base font-bold text-center">あなたは<strong>「ゼネコン（元請業者）」</strong>の経営者です。</p>
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 shadow-sm">
+                    <h3 class="font-black text-blue-800 mb-2 border-b border-blue-200 pb-1">📌 基本ルール</h3>
+                    <ul class="list-disc list-inside space-y-2 font-medium">
                         <li>他社よりも<strong>安い価格</strong> で入札すると工事を落札できます。</li>
                         <li>しかし、利益を出すためには<strong>できるだけ高い価格</strong>で落札する必要があります。</li>
                         <li>落札後は、工事に必要な人数を「正社員」か「発注（外注）」で確保します。</li>
@@ -112,483 +114,516 @@
                     </ul>
                 </div>
             </div>
-            <div class="mt-4 pt-3 border-t border-slate-800 shrink-0">
-                <button id="welcome-start-btn" onclick="startGameLocal()" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-black py-3 rounded-xl shadow-lg transition-colors text-base border-b-4 border-blue-800">
+            <div class="mt-6 pt-4 border-t border-slate-200 shrink-0">
+                <button id="welcome-start-btn" onclick="startGameLocal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl shadow-lg transition-colors text-lg border-b-4 border-blue-800 active:scale-95">
                     ゲームを始める
                 </button>
             </div>
         </div>
     </div>
 
-    <header class="bg-slate-900/95 backdrop-blur border-b border-slate-800 px-3 py-2 shadow-md flex justify-between items-center z-[85] shrink-0">
-        <div class="flex items-center gap-2 sm:gap-3 overflow-x-auto custom-scroll py-0.5">
-            <h1 class="text-sm sm:text-base font-bold whitespace-nowrap flex items-center gap-1.5">
-                <span class="text-blue-400 font-black">入札 ver.141</span>
-                <span class="text-xs bg-slate-800 px-2 py-0.5 rounded border border-slate-700">第 <span id="turn-display" class="text-yellow-400 font-bold text-base">1</span> / <span id="total-turn-display">10</span> T</span>
-            </h1>
-            <button id="room-badge" class="hidden px-2 py-1 bg-indigo-600/80 hover:bg-indigo-600 active:scale-95 rounded text-xs font-bold text-white shadow border border-indigo-500 transition-colors whitespace-nowrap" onclick="if(myPlayerIndex === 0) document.getElementById('lobby-modal').classList.remove('hidden')">🏠 <span id="current-room-id-display">---</span></button>
-            <div id="ai-status" class="hidden px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded text-[10px] font-bold shadow animate-pulse whitespace-nowrap">🤖 学習済</div>
+    <header class="bg-slate-800 text-white p-3 shadow-md flex justify-between items-center z-[85] shrink-0">
+        <div class="flex items-center gap-3">
+            <h1 class="text-xl font-bold">入札 ver.145② <span class="text-sm font-normal ml-2">第 <span id="turn-display" class="text-yellow-400 font-bold text-2xl">1</span> / <span id="total-turn-display">10</span> ターン</span></h1>
+            <button id="room-badge" class="hidden px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded text-xs font-bold text-white shadow border border-indigo-500 transition-colors" onclick="if(myPlayerIndex === 0) document.getElementById('lobby-modal').classList.remove('hidden')">🏠 ルーム: <span id="current-room-id-display">---</span></button>
+            <div id="ai-status" class="hidden px-2 py-1 bg-emerald-500 rounded text-xs font-bold shadow animate-pulse">🤖 データ学習済</div>
             
-            <div class="flex items-center gap-1.5 ml-1">
-                 <button id="multiplayer-btn" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold py-1 px-2.5 rounded-lg shadow transition-colors flex items-center gap-1 text-xs border border-indigo-500 whitespace-nowrap" onclick="openLobbyModal()">
-                    <span>🌐</span> オンライン
+            <div class="flex gap-2 ml-2">
+                 <button id="multiplayer-btn" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-1.5 px-3 rounded-lg shadow transition-colors flex items-center gap-1 text-sm border border-indigo-500" onclick="openLobbyModal()">
+                    <span>🌐</span> オンライン対戦
                 </button>
-                 <button id="leave-room-btn" class="hidden bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-bold py-1 px-2.5 rounded-lg shadow transition-colors flex items-center gap-1 text-xs border border-rose-500 whitespace-nowrap" onclick="leaveRoom()">
+                 <button id="leave-room-btn" class="hidden bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-bold py-1.5 px-3 rounded-lg shadow transition-colors flex items-center gap-1 text-sm border border-rose-500" onclick="leaveRoom()">
                     <span>🚪</span> 退出
                 </button>
-                <button id="settings-btn" class="bg-fuchsia-600 hover:bg-fuchsia-500 active:scale-95 text-white font-bold py-1 px-2.5 rounded-lg shadow transition-colors flex items-center gap-1 text-xs border border-fuchsia-500 whitespace-nowrap" onclick="openSettingsModal()">
-                    <span>🛠️</span> 設定
+                <button id="settings-btn" class="bg-fuchsia-600 hover:bg-fuchsia-700 active:scale-95 text-white font-bold py-1.5 px-3 rounded-lg shadow transition-colors flex items-center gap-1 text-sm border border-fuchsia-500" onclick="openSettingsModal()">
+                    <span>🛠️</span> 数値設定
                 </button>
-                <button id="help-btn" class="bg-teal-600 hover:bg-teal-500 active:scale-95 text-white font-bold py-1 px-2.5 rounded-lg shadow transition-colors flex items-center gap-1 text-xs border border-teal-500 whitespace-nowrap" onclick="document.getElementById('help-modal').classList.remove('hidden')">
-                    <span>❓</span> ルール
+                <button id="help-btn" class="bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-bold py-1.5 px-3 rounded-lg shadow transition-colors flex items-center gap-1 text-sm border border-teal-500" onclick="document.getElementById('help-modal').classList.remove('hidden')">
+                    <span>❓</span> ヘルプ
                 </button>
-                <button id="auto-sim-btn" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-white font-bold py-1 px-2.5 rounded-lg shadow transition-colors flex items-center gap-1 text-xs border border-slate-600 whitespace-nowrap" onclick="openSimConfigModal()">
-                    <span>⚙️</span> AI
+                <button id="auto-sim-btn" class="bg-slate-600 hover:bg-slate-700 active:scale-95 text-white font-bold py-1.5 px-3 rounded-lg shadow transition-colors flex items-center gap-1 text-sm border border-slate-500" onclick="openSimConfigModal()">
+                    <span>⚙️</span> CPU設定
                 </button>
             </div>
         </div>
-        <div id="economy-status" class="px-2.5 py-1 rounded-lg font-black text-xs sm:text-sm bg-slate-800 text-slate-300 shadow border border-slate-700 flex items-center whitespace-nowrap shrink-0 ml-2">
+        <div id="economy-status" class="px-3 py-1.5 rounded-lg font-black text-base sm:text-lg bg-gray-500 text-white shadow-md border border-gray-600 flex items-center whitespace-nowrap shrink-0">
             🪙 景気：未定
         </div>
     </header>
 
-    <main class="flex-1 flex flex-row overflow-hidden p-2 gap-2 bg-slate-950">
-        
-        <!-- Left Panel: Construction Cards & Player Statuses -->
-        <section class="w-[58%] lg:w-[60%] flex flex-col gap-2 overflow-hidden">
-            
-            <!-- Projects Area -->
-            <div class="bg-slate-900 border border-slate-800 p-2 rounded-xl shadow-sm shrink-0">
-                <h2 class="text-xs font-bold text-slate-400 border-b border-slate-800 mb-1.5 pb-1 flex items-center justify-between">
-                    <span class="flex items-center gap-1.5"><span>🏗️</span> 場の工事カード（タップして選択）</span>
-                    <span class="text-[10px] text-slate-500 font-normal">入札フェイズ</span>
-                </h2>
-                <div class="grid grid-cols-3 gap-1.5 sm:gap-2">
-                    <div id="card-large" class="border border-red-500/60 rounded-lg p-1.5 sm:p-2 bg-red-950/20 relative shadow-sm transition-all cursor-pointer hover:bg-red-900/30 active:scale-95" onclick="selectProject('large')">
-                        <h3 class="text-red-400 font-black text-center mb-1 text-xs">大工事</h3>
-                        <div class="text-[10px] space-y-0.5 bg-slate-900/80 p-1 rounded border border-red-900/50 pointer-events-none">
-                            <p class="text-slate-400 flex justify-between"><span>必要:</span> <span class="text-slate-200 font-bold"><span id="labor-large">10</span>人</span></p>
-                            <div class="text-center pt-0.5 border-t border-slate-800">
-                                <span id="maxbid-large" class="text-red-300 font-black">上限:500Y</span>
+    <main class="flex-1 flex overflow-hidden">
+        <section class="w-2/3 p-2 flex flex-col gap-2 bg-gray-100 overflow-hidden">
+            <div class="bg-white p-2 rounded-xl shadow border border-gray-200 shrink-0">
+                <h2 class="text-sm font-bold border-b border-gray-300 mb-1.5 pb-1 flex items-center gap-2"><span>🏗️</span> 場の工事カード</h2>
+                <div class="grid grid-cols-3 gap-2">
+                    <div id="card-large" class="border-2 border-red-500 rounded-lg p-2 bg-red-50 relative shadow-sm transition-all cursor-pointer hover:bg-red-100" onclick="selectProject('large')">
+                        <h3 class="text-red-700 font-bold text-center mb-1 text-sm">大工事</h3>
+                        <div class="text-[10px] sm:text-xs space-y-1 bg-white p-1.5 rounded border border-red-100 pointer-events-none">
+                            <p class="text-gray-600 font-bold border-b border-red-100 pb-0.5 mb-0.5 flex justify-between"><span>必要人数:</span> <span><span id="labor-large">10</span>人</span></p>
+                            <div class="text-center mt-1">
+                                <span id="maxbid-large" class="text-gray-700 font-black">上限:500Y</span>
                             </div>
                         </div>
                     </div>
-                    <div id="card-medium" class="border border-blue-500/60 rounded-lg p-1.5 sm:p-2 bg-blue-950/20 relative shadow-sm transition-all cursor-pointer hover:bg-blue-900/30 active:scale-95" onclick="selectProject('medium')">
-                        <h3 class="text-blue-400 font-black text-center mb-1 text-xs">中工事</h3>
-                        <div class="text-[10px] space-y-0.5 bg-slate-900/80 p-1 rounded border border-blue-900/50 pointer-events-none">
-                            <p class="text-slate-400 flex justify-between"><span>必要:</span> <span class="text-slate-200 font-bold"><span id="labor-medium">7</span>人</span></p>
-                            <div class="text-center pt-0.5 border-t border-slate-800">
-                                <span id="maxbid-medium" class="text-blue-300 font-black">上限:350Y</span>
+                    <div id="card-medium" class="border-2 border-blue-500 rounded-lg p-2 bg-blue-50 relative shadow-sm transition-all cursor-pointer hover:bg-blue-100" onclick="selectProject('medium')">
+                        <h3 class="text-blue-700 font-bold text-center mb-1 text-sm">中工事</h3>
+                        <div class="text-[10px] sm:text-xs space-y-1 bg-white p-1.5 rounded border border-blue-100 pointer-events-none">
+                            <p class="text-gray-600 font-bold border-b border-blue-100 pb-0.5 mb-0.5 flex justify-between"><span>必要人数:</span> <span><span id="labor-medium">7</span>人</span></p>
+                            <div class="text-center mt-1">
+                                <span id="maxbid-medium" class="text-gray-700 font-black">上限:350Y</span>
                             </div>
                         </div>
                     </div>
-                    <div id="card-small" class="border border-emerald-500/60 rounded-lg p-1.5 sm:p-2 bg-emerald-950/20 relative shadow-sm transition-all cursor-pointer hover:bg-emerald-900/30 active:scale-95" onclick="selectProject('small')">
-                        <h3 class="text-emerald-400 font-black text-center mb-1 text-xs">小工事</h3>
-                        <div class="text-[10px] space-y-0.5 bg-slate-900/80 p-1 rounded border border-emerald-900/50 pointer-events-none">
-                            <p class="text-slate-400 flex justify-between"><span>必要:</span> <span class="text-slate-200 font-bold"><span id="labor-small">4</span>人</span></p>
-                            <div class="text-center pt-0.5 border-t border-slate-800">
-                                <span id="maxbid-small" class="text-emerald-300 font-black">上限:200Y</span>
+                    <div id="card-small" class="border-2 border-green-500 rounded-lg p-2 bg-green-50 relative shadow-sm transition-all cursor-pointer hover:bg-green-100" onclick="selectProject('small')">
+                        <h3 class="text-green-700 font-bold text-center mb-1 text-sm">小工事</h3>
+                        <div class="text-[10px] sm:text-xs space-y-1 bg-white p-1.5 rounded border border-green-100 pointer-events-none">
+                            <p class="text-gray-600 font-bold border-b border-green-100 pb-0.5 mb-0.5 flex justify-between"><span>必要人数:</span> <span><span id="labor-small">4</span>人</span></p>
+                            <div class="text-center mt-1">
+                                <span id="maxbid-small" class="text-gray-700 font-black">上限:200Y</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Player Status Container (4 Grid layout for horizontal view) -->
-            <div class="bg-slate-900 border border-slate-800 p-2 rounded-xl shadow-sm flex-1 flex flex-col overflow-hidden">
-                <h2 class="text-xs font-bold text-slate-400 border-b border-slate-800 mb-1.5 pb-1 flex items-center justify-between">
-                    <span class="flex items-center gap-1.5"><span>🏢</span> 競合各社の状況</span>
-                    <span class="text-[10px] text-slate-500 font-normal">リアルタイム状況</span>
-                </h2>
-                <div class="grid grid-cols-2 gap-1.5 sm:gap-2 overflow-y-auto custom-scroll pr-1 flex-1" id="players-container"></div>
+            <div class="bg-white p-2 rounded-xl shadow border border-gray-200 flex-1 flex flex-col overflow-hidden">
+                <h2 class="text-sm font-bold border-b border-gray-300 mb-1 pb-1 flex items-center gap-2"><span>🏢</span> 各社の状況</h2>
+                <div class="grid grid-cols-2 gap-2 overflow-y-auto custom-scroll pr-1" id="players-container"></div>
             </div>
         </section>
 
-        <!-- Right Panel: Controls & Action / Graphs Area -->
-        <section class="w-[42%] lg:w-[40%] flex flex-col gap-2 overflow-hidden">
-            
-            <!-- Price History Chart Buttons Box -->
-            <div class="bg-slate-900 border border-slate-800 p-2 rounded-xl shadow-sm shrink-0">
-                <h3 class="font-bold text-slate-400 text-center mb-1 flex items-center justify-center gap-1 text-[11px]"><span>📈</span> 落札価格推移グラフ</h3>
-                <div class="grid grid-cols-3 gap-1">
-                    <button onclick="openChartModal('large')" class="bg-red-950/40 hover:bg-red-900/50 active:scale-95 text-red-300 font-bold py-1 px-1.5 rounded border border-red-900/60 text-[10px] flex items-center justify-center gap-1">
-                        <span>大工事</span> 📊
-                    </button>
-                    <button onclick="openChartModal('medium')" class="bg-blue-950/40 hover:bg-blue-900/50 active:scale-95 text-blue-300 font-bold py-1 px-1.5 rounded border border-blue-900/60 text-[10px] flex items-center justify-center gap-1">
-                        <span>中工事</span> 📊
-                    </button>
-                    <button onclick="openChartModal('small')" class="bg-emerald-950/40 hover:bg-emerald-900/50 active:scale-95 text-emerald-300 font-bold py-1 px-1.5 rounded border border-emerald-900/60 text-[10px] flex items-center justify-center gap-1">
-                        <span>小工事</span> 📊
-                    </button>
+        <section class="w-1/3 flex flex-col border-l border-gray-300 bg-slate-50 shadow-xl z-10 overflow-hidden">
+            <div class="shrink-0 p-3 border-b border-slate-200 bg-slate-50" id="charts-buttons-area">
+                <div class="bg-white p-2 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-700 text-center mb-1.5 flex items-center justify-center gap-1 text-xs"><span>📈</span> 落札価格推移グラフ</h3>
+                    <div class="space-y-1.5">
+                        <button onclick="openChartModal('large')" class="w-full bg-red-50 hover:bg-red-100 active:scale-95 text-red-700 font-bold py-1.5 px-2 rounded-lg border border-red-200 shadow-sm transition-all flex justify-between items-center text-xs">
+                            <span class="flex items-center gap-1"><span>🏢</span> 大工事グラフ</span>
+                            <span>📊</span>
+                        </button>
+                        <button onclick="openChartModal('medium')" class="w-full bg-blue-50 hover:bg-blue-100 active:scale-95 text-blue-700 font-bold py-1.5 px-2 rounded-lg border border-blue-200 shadow-sm transition-all flex justify-between items-center text-xs">
+                            <span class="flex items-center gap-1"><span>🏬</span> 中工事グラフ</span>
+                            <span>📊</span>
+                        </button>
+                        <button onclick="openChartModal('small')" class="w-full bg-green-50 hover:bg-green-100 active:scale-95 text-green-700 font-bold py-1.5 px-2 rounded-lg border border-green-200 shadow-sm transition-all flex justify-between items-center text-xs">
+                            <span class="flex items-center gap-1"><span>🏠</span> 小工事グラフ</span>
+                            <span>📊</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Action Area (Bidding / Hiring / Start Game) -->
-            <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl shadow-sm flex-1 flex flex-col justify-center overflow-y-auto custom-scroll" id="action-area">
+            <div class="flex-1 p-4 bg-white flex flex-col justify-center overflow-y-auto custom-scroll" id="action-area">
                 
-                <!-- Start Game Container -->
                 <div id="start-game-container" class="hidden slide-in w-full text-center my-auto">
-                    <p class="text-xs font-bold text-slate-400 mb-3">準備ができたら1ターン目を開始してください</p>
-                    <button onclick="startSoloGame()" class="w-full bg-yellow-500 hover:bg-yellow-400 active:scale-95 text-slate-950 font-black py-3 px-4 rounded-xl shadow-lg transition-all border-b-4 border-yellow-700 flex justify-center items-center gap-2 text-sm sm:text-base">
+                    <p class="text-sm font-bold text-slate-500 mb-4">準備ができたらゲームを開始してください</p>
+                    <button onclick="startSoloGame()" class="w-full bg-yellow-400 hover:bg-yellow-500 active:scale-95 text-slate-900 font-black py-4 rounded-xl shadow-lg transition-all border-b-4 border-yellow-600 flex justify-center items-center gap-2 text-lg">
                         ▶ 1ターン目を開始する
                     </button>
                 </div>
                 
-                <!-- Bidding Form -->
-                <div id="bidding-form" class="hidden space-y-2.5 slide-in w-full">
+                <div id="bidding-form" class="hidden space-y-4 slide-in w-full">
                     <div id="bidding-instructions" class="text-center">
-                        <button id="skip-bid-btn" class="w-full bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 font-bold py-2 rounded-xl shadow border border-slate-700 transition-all text-xs">入札しない（パス）</button>
+                        <button id="skip-bid-btn" class="w-full bg-slate-400 hover:bg-slate-500 active:scale-95 text-white font-bold py-3 rounded-xl shadow border-b-4 border-slate-500 transition-all">入札しない（パス）</button>
                     </div>
                     
-                    <div id="bidding-inputs" class="hidden space-y-2">
-                        <div class="bg-blue-950/30 p-2 rounded-lg border border-blue-900/40 text-center flex items-center justify-between px-3">
-                            <span class="text-xs font-bold text-blue-400">選択中:</span>
-                            <div id="selected-project-name" class="font-black text-sm sm:text-base text-blue-200">---</div>
+                    <div id="bidding-inputs" class="hidden space-y-3">
+                        <div class="bg-blue-50 p-2 rounded-lg border border-blue-200 shadow-inner text-center">
+                            <span class="text-xs font-bold text-blue-700">選択中:</span>
+                            <div id="selected-project-name" class="font-black text-lg text-blue-900 mt-0.5">---</div>
                         </div>
                         
-                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 shadow-inner flex flex-col justify-between">
-                            <label class="block text-xs font-bold mb-1.5 text-slate-300 text-center">入札価格（5Y単位）: <span id="bid-amount-display" class="text-lg text-blue-400 font-black">0</span> Y</label>
-                            <div class="w-full py-1">
-                                <input type="range" id="bid-amount" class="w-full h-2.5 bg-slate-800 rounded-lg cursor-pointer accent-blue-500 shadow-inner" step="5" min="0" max="500" value="0">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner mt-1 flex flex-col justify-between">
+                            <label class="block text-sm font-bold mb-2 text-slate-700 text-center">入札価格（1Y単位）: <span id="bid-amount-display" class="text-2xl text-blue-700 font-black">0</span> Y</label>
+                            <div class="w-full py-2">
+                                <input type="range" id="bid-amount" class="w-full h-3 bg-slate-300 rounded-lg cursor-pointer accent-blue-600 shadow-inner" step="1" min="0" max="500" value="0">
                             </div>
-                            <div class="text-[11px] font-bold text-slate-400 text-center mt-1 h-4 flex items-center justify-center">
+                            <div class="text-sm font-bold text-slate-700 text-center mt-2 h-5 flex items-center justify-center">
                                 <span id="submit-bid-profit"></span>
                             </div>
                         </div>
 
-                        <button id="submit-bid-btn" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold py-2.5 rounded-xl shadow-lg transition-all border-b-4 border-blue-800 flex justify-center items-center gap-2 text-xs sm:text-sm">
+                        <button id="submit-bid-btn" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold py-3 rounded-xl shadow-lg transition-all border-b-4 border-blue-800 flex justify-center items-center gap-2">
                             入札を確定する
                         </button>
                     </div>
                 </div>
 
-                <!-- Hiring Form -->
-                <div id="hiring-form" class="hidden space-y-2 slide-in w-full">
-                    <div id="hiring-info" class="text-[11px] space-y-1 p-2 bg-slate-950 border border-slate-800 rounded-lg shadow-inner"></div>
+                <div id="hiring-form" class="hidden space-y-3 slide-in w-full">
+                    <div id="hiring-info" class="text-sm space-y-1 p-3 bg-gray-50 border rounded-lg shadow-inner"></div>
                     
-                    <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 relative shadow-sm">
-                        <div class="flex justify-between text-[10px] font-bold mb-2">
-                            <span class="text-orange-400 bg-orange-950/60 px-1.5 py-0.5 rounded border border-orange-900/50">◀ 全て発注</span>
-                            <span class="text-blue-400 bg-blue-950/60 px-1.5 py-0.5 rounded border border-blue-900/50">全て正社員 ▶</span>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 relative mt-2 shadow-sm">
+                        <div class="flex justify-between text-[11px] sm:text-xs font-bold mb-3">
+                            <span class="text-orange-800 bg-orange-100 px-2 py-1 rounded shadow-sm">◀ 全て発注</span>
+                            <span class="text-blue-800 bg-blue-100 px-2 py-1 rounded shadow-sm">全て正社員 ▶</span>
                         </div>
                         
-                        <div class="w-full py-1">
-                            <input type="range" id="hire-slider" class="w-full h-3 rounded-lg cursor-pointer custom-color-slider shadow-inner" min="0" max="100" step="0.1" value="0">
+                        <div class="w-full pt-2 pb-2">
+                            <input type="range" id="hire-slider" class="w-full h-4 rounded-lg cursor-pointer custom-color-slider shadow-inner" min="0" max="100" step="0.1" value="0">
                         </div>
                         
-                        <div class="flex justify-between items-center mt-2.5 text-xs font-black gap-1">
-                            <div class="text-blue-400 bg-slate-900 border border-slate-800 px-2 py-1 rounded shadow-sm whitespace-nowrap" id="slider-val-full">👨‍💼 正社員: 0</div>
+                        <div class="flex justify-between items-center mt-4 text-sm font-black gap-1">
+                            <div class="text-blue-700 bg-white border border-blue-200 px-2 py-1.5 rounded-lg shadow-sm whitespace-nowrap text-xs sm:text-sm" id="slider-val-full">👨‍💼 正社員: 0</div>
                             
-                            <div class="flex-1 text-center font-bold text-[11px] text-slate-300 whitespace-nowrap px-0.5 flex flex-col justify-center items-center">
-                                <span class="text-[9px] text-slate-500 leading-none mb-0.5">純利益</span>
-                                <span id="hire-profit-display" class="text-yellow-400 font-black text-xs leading-none">-- Y</span>
+                            <div class="flex-1 text-center font-bold text-xs sm:text-sm text-slate-700 whitespace-nowrap px-1 flex flex-col justify-center items-center">
+                                <span class="text-[10px] sm:text-xs text-slate-500 mb-0.5">純利益</span>
+                                <span id="hire-profit-display" class="text-yellow-600 font-black text-sm sm:text-base leading-none">-- Y</span>
                             </div>
 
-                            <div class="text-orange-400 bg-slate-900 border border-slate-800 px-2 py-1 rounded shadow-sm whitespace-nowrap" id="slider-val-temp">👷 発注: 0</div>
+                            <div class="text-orange-700 bg-white border border-orange-200 px-2 py-1.5 rounded-lg shadow-sm whitespace-nowrap text-xs sm:text-sm" id="slider-val-temp">👷 発注: 0</div>
                         </div>
                     </div>
 
-                    <button id="submit-hire-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold py-2.5 rounded-xl shadow-lg transition-all border-b-4 border-emerald-800 disabled:opacity-50 text-xs sm:text-sm" disabled>雇用を確定する</button>
+                    <button id="submit-hire-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-3 mt-1 rounded-xl shadow-lg transition-all border-b-4 border-emerald-800 disabled:opacity-50" disabled>雇用を確定する</button>
                 </div>
             </div>
         </section>
     </main>
 
-    <div id="turn-profit-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[110] p-3">
-        <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl shadow-2xl w-full max-w-sm text-center border-t-8 border-yellow-400 flex flex-col slide-in">
-            <h2 id="tp-title" class="text-lg font-black text-white mb-3">第 <span id="tp-turn"></span> ターン 収益結果</h2>
-            <div id="tp-content" class="space-y-1.5 mb-4 text-left max-h-[40vh] overflow-y-auto custom-scroll pr-1 text-xs"></div>
-            <div class="text-3xl font-black text-slate-500" id="tp-countdown">4</div>
+    <div id="turn-profit-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[110] p-4">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-sm text-center border-t-8 border-yellow-400 flex flex-col slide-in">
+            <h2 id="tp-title" class="text-xl font-black text-slate-800 mb-4">第 <span id="tp-turn"></span> ターン 収益結果</h2>
+            <div id="tp-content" class="space-y-2 mb-6 text-left"></div>
+            <div class="text-4xl font-black text-slate-300" id="tp-countdown">4</div>
         </div>
     </div>
 
     <!-- 数値設定モーダル -->
-    <div id="game-settings-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[90] p-3">
-        <div class="bg-slate-900 border border-slate-700 p-4 sm:p-6 rounded-2xl shadow-2xl w-full max-w-2xl slide-in relative border-t-8 border-fuchsia-600 flex flex-col max-h-[92vh]">
-            <button onclick="document.getElementById('game-settings-modal').classList.add('hidden')" class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 font-bold transition-colors z-10">✕</button>
-            <div class="text-center mb-4 shrink-0">
-                <span class="text-3xl mb-1 block">🛠</span>
-                <h2 class="text-xl font-black text-white">ゲーム数値設定</h2>
-                <p class="text-xs text-slate-400 mt-0.5">工事内容や雇用コスト、景気変動確率を自由に変更できます</p>
+    <div id="game-settings-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[90] p-4">
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-3xl slide-in relative border-t-8 border-fuchsia-600 flex flex-col max-h-[90vh]">
+            <button onclick="document.getElementById('game-settings-modal').classList.add('hidden')" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 font-bold transition-colors z-10">✕</button>
+            <div class="text-center mb-6 shrink-0">
+                <span class="text-4xl mb-2 block">🛠</span>
+                <h2 class="text-2xl font-black text-slate-800">ゲーム数値設定</h2>
+                <p class="text-sm text-slate-500 mt-1">工事内容や雇用コスト、景気変動確率を自由に変更できます</p>
             </div>
             
-            <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-4 text-slate-300 text-xs">
-                <section class="bg-slate-950 p-3 rounded-xl border border-slate-800 shadow-sm">
-                    <h3 class="font-bold text-fuchsia-400 border-b border-slate-800 pb-1 mb-2.5 flex items-center gap-1.5"><span>📊</span> 景気変動確率の設定</h3>
-                    <div class="flex flex-col gap-2 bg-slate-900 p-3 rounded-xl border border-slate-800 shadow-inner">
-                        <div class="flex justify-between items-center font-bold text-[11px] text-slate-300 mb-1">
-                            <span class="text-blue-400 bg-blue-950/60 px-2 py-0.5 rounded border border-blue-900/60">不景気 (<span id="prob-recession-val">50</span>%)</span>
-                            <span class="text-pink-400 bg-pink-950/60 px-2 py-0.5 rounded border border-pink-900/60">好景気 (<span id="prob-boom-val">50</span>%)</span>
+            <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-6 text-slate-700 text-sm">
+                <!-- 景気変動確率設定セクション -->
+                <section class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold text-fuchsia-700 border-b-2 border-fuchsia-200 pb-1 mb-3 flex items-center gap-2"><span>📊</span> 景気変動確率の設定</h3>
+                    <p class="text-xs text-slate-600 mb-4">スライドバーで不景気と好景気の発生確率（5%刻みステップ）を調整できます。ドットにカーソルを合わせると確率が表示されます。</p>
+                    
+                    <div class="flex flex-col gap-2 bg-white p-4 rounded-xl border border-slate-200 shadow-inner">
+                        <div class="flex justify-between items-center text-xs font-bold text-slate-700 mb-1">
+                            <span class="text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-200">不景気 (<span id="prob-recession-val">50</span>%)</span>
+                            <span class="text-pink-600 bg-pink-50 px-2 py-1 rounded border border-pink-200">好景気 (<span id="prob-boom-val">50</span>%)</span>
                         </div>
-                        <div class="relative py-2">
+                        
+                        <div class="relative py-3">
                             <input type="range" id="economy-prob-slider" class="w-full economy-slider cursor-pointer shadow-inner" min="0" max="100" step="5" value="50">
                         </div>
-                        <div class="text-center text-[10px] font-bold text-slate-400 mt-0.5">
-                            現在の設定： 不景気 <span id="label-recession-p" class="text-blue-400 font-black">50%</span> ｜ 好景気 <span id="label-boom-p" class="text-pink-400 font-black">50%</span>
+                        
+                        <div class="text-center text-xs font-bold text-slate-500 mt-1">
+                            現在の設定： 不景気 <span id="label-recession-p" class="text-blue-600 font-black">50%</span> ｜ 好景気 <span id="label-boom-p" class="text-pink-600 font-black">50%</span>
                         </div>
                     </div>
                 </section>
 
                 <section>
-                    <h3 class="font-bold text-fuchsia-400 border-b border-slate-800 pb-1 mb-2 flex items-center gap-1.5"><span>💰</span> 初期状態設定</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
-                            <label class="flex flex-col font-bold text-slate-400">初期資金 (Y) 
-                                <input type="number" id="set-init-money" class="mt-1 bg-slate-900 border border-slate-700 p-1 rounded font-mono font-bold text-white text-xs" min="0">
+                    <h3 class="text-lg font-bold text-fuchsia-700 border-b-2 border-fuchsia-200 pb-1 mb-3 flex items-center gap-2"><span>💰</span> 初期状態設定</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <label class="flex flex-col text-xs font-bold text-slate-600">初期資金 (Y) 
+                                <input type="number" id="set-init-money" class="mt-1 border border-slate-300 p-1.5 rounded font-mono font-bold" min="0">
                             </label>
                         </div>
-                        <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
-                            <label class="flex flex-col font-bold text-slate-400">初期正社員 (人) 
-                                <input type="number" id="set-init-emp" class="mt-1 bg-slate-900 border border-slate-700 p-1 rounded font-mono font-bold text-white text-xs" min="0">
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <label class="flex flex-col text-xs font-bold text-slate-600">初期正社員 (人) 
+                                <input type="number" id="set-init-emp" class="mt-1 border border-slate-300 p-1.5 rounded font-mono font-bold" min="0">
                             </label>
                         </div>
                     </div>
                 </section>
 
                 <section>
-                    <h3 class="font-bold text-fuchsia-400 border-b border-slate-800 pb-1 mb-2 flex items-center gap-1.5"><span>🏗</span> 工事カード設定</h3>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div class="bg-red-950/20 p-2 rounded-lg border border-red-900/40 space-y-1.5">
-                            <h4 class="font-bold text-red-400 text-center">大工事</h4>
-                            <label class="flex flex-col font-bold text-[10px] text-red-300">上限(Y) <input type="number" id="set-l-max" class="mt-0.5 bg-slate-900 border border-red-900/60 p-1 rounded font-mono font-bold text-white text-xs" min="0"></label>
-                            <label class="flex flex-col font-bold text-[10px] text-red-300">人数 <input type="number" id="set-l-labor" class="mt-0.5 bg-slate-900 border border-red-900/60 p-1 rounded font-mono font-bold text-white text-xs" min="0"></label>
+                    <h3 class="text-lg font-bold text-fuchsia-700 border-b-2 border-fuchsia-200 pb-1 mb-3 flex items-center gap-2"><span>🏗</span> 工事カード設定</h3>
+                    <div class="space-y-4">
+                        <div class="bg-red-50 p-3 rounded-lg border border-red-200">
+                            <h4 class="font-bold text-red-700 mb-2">大工事</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex flex-col text-xs font-bold text-red-800">入札上限(Y) <input type="number" id="set-l-max" class="mt-1 border border-red-300 p-1.5 rounded font-mono font-bold" min="0"></label>
+                                <label class="flex flex-col text-xs font-bold text-red-800">必要人数 <input type="number" id="set-l-labor" class="mt-1 border border-red-300 p-1.5 rounded font-mono font-bold" min="0"></label>
+                            </div>
                         </div>
-                        <div class="bg-blue-950/20 p-2 rounded-lg border border-blue-900/40 space-y-1.5">
-                            <h4 class="font-bold text-blue-400 text-center">中工事</h4>
-                            <label class="flex flex-col font-bold text-[10px] text-blue-300">上限(Y) <input type="number" id="set-m-max" class="mt-0.5 bg-slate-900 border border-blue-900/60 p-1 rounded font-mono font-bold text-white text-xs" min="0"></label>
-                            <label class="flex flex-col font-bold text-[10px] text-blue-300">人数 <input type="number" id="set-m-labor" class="mt-0.5 bg-slate-900 border border-blue-900/60 p-1 rounded font-mono font-bold text-white text-xs" min="0"></label>
+                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                            <h4 class="font-bold text-blue-700 mb-2">中工事</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex flex-col text-xs font-bold text-blue-800">入札上限(Y) <input type="number" id="set-m-max" class="mt-1 border border-blue-300 p-1.5 rounded font-mono font-bold" min="0"></label>
+                                <label class="flex flex-col text-xs font-bold text-blue-800">必要人数 <input type="number" id="set-m-labor" class="mt-1 border border-blue-300 p-1.5 rounded font-mono font-bold" min="0"></label>
+                            </div>
                         </div>
-                        <div class="bg-emerald-950/20 p-2 rounded-lg border border-emerald-900/40 space-y-1.5">
-                            <h4 class="font-bold text-emerald-400 text-center">小工事</h4>
-                            <label class="flex flex-col font-bold text-[10px] text-emerald-300">上限(Y) <input type="number" id="set-s-max" class="mt-0.5 bg-slate-900 border border-emerald-900/60 p-1 rounded font-mono font-bold text-white text-xs" min="0"></label>
-                            <label class="flex flex-col font-bold text-[10px] text-emerald-300">人数 <input type="number" id="set-s-labor" class="mt-0.5 bg-slate-900 border border-emerald-900/60 p-1 rounded font-mono font-bold text-white text-xs" min="0"></label>
-                        </div>
-                    </div>
-                </section>
-                
-                <section>
-                    <h3 class="font-bold text-fuchsia-400 border-b border-slate-800 pb-1 mb-2 flex items-center gap-1.5"><span>👷</span> 労働力と全体設定</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 space-y-2">
-                            <h4 class="font-bold text-slate-300 text-center text-xs">👨‍💼 正社員</h4>
-                            <label class="flex flex-col font-bold text-[10px] text-slate-400">提供人数 <input type="number" id="set-full-p" class="mt-0.5 bg-slate-900 border border-slate-700 p-1 rounded font-mono font-bold text-white text-xs" min="0" step="0.1"></label>
-                            <label class="flex flex-col font-bold text-[10px] text-slate-400">維持費 (Y) <input type="number" id="set-full-c" class="mt-0.5 bg-slate-900 border border-slate-700 p-1 rounded font-mono font-bold text-white text-xs" min="0"></label>
-                        </div>
-                        <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 space-y-2">
-                            <h4 class="font-bold text-slate-300 text-center text-xs">👷 発注・派遣</h4>
-                            <label class="flex flex-col font-bold text-[10px] text-slate-400">提供人数 <input type="number" id="set-temp-p" class="mt-0.5 bg-slate-900 border border-slate-700 p-1 rounded font-mono font-bold text-white text-xs" min="0" step="0.1"></label>
-                            <label class="flex flex-col font-bold text-[10px] text-slate-400">好景気コスト <input type="number" id="set-temp-cA" class="mt-0.5 bg-slate-900 border border-slate-700 p-1 rounded font-mono font-bold text-white text-xs" min="0"></label>
-                            <label class="flex flex-col font-bold text-[10px] text-slate-400">不景気コスト <input type="number" id="set-temp-cB" class="mt-0.5 bg-slate-900 border border-slate-700 p-1 rounded font-mono font-bold text-white text-xs" min="0"></label>
+                        <div class="bg-green-50 p-3 rounded-lg border border-green-200">
+                            <h4 class="font-bold text-green-700 mb-2">小工事</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex flex-col text-xs font-bold text-green-800">入札上限(Y) <input type="number" id="set-s-max" class="mt-1 border border-green-300 p-1.5 rounded font-mono font-bold" min="0"></label>
+                                <label class="flex flex-col text-xs font-bold text-green-800">必要人数 <input type="number" id="set-s-labor" class="mt-1 border border-green-300 p-1.5 rounded font-mono font-bold" min="0"></label>
+                            </div>
                         </div>
                     </div>
                 </section>
                 
                 <section>
-                    <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
-                        <label class="flex flex-col font-bold text-slate-400 text-xs">全ターン数 (1〜20) 
-                            <input type="number" id="set-total-turns" class="mt-1 bg-slate-900 border border-slate-700 p-1.5 rounded font-mono font-bold text-white text-xs" min="1" max="20">
+                    <h3 class="text-lg font-bold text-fuchsia-700 border-b-2 border-fuchsia-200 pb-1 mb-3 flex items-center gap-2"><span>👷</span> 労働力設定</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <h4 class="font-bold text-slate-700 mb-2 text-center">👨‍💼 正社員</h4>
+                            <div class="space-y-2">
+                                <label class="flex flex-col text-xs font-bold text-slate-600">1人あたりの提供人数 <input type="number" id="set-full-p" class="mt-1 border border-slate-300 p-1.5 rounded font-mono font-bold" min="0" step="0.1"></label>
+                                <label class="flex flex-col text-xs font-bold text-slate-600">維持コスト (Y/毎T) <input type="number" id="set-full-c" class="mt-1 border border-slate-300 p-1.5 rounded font-mono font-bold" min="0"></label>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <h4 class="font-bold text-slate-700 mb-2 text-center">👷 新規採用・発注</h4>
+                            <div class="space-y-2">
+                                <label class="flex flex-col text-xs font-bold text-slate-600">1回あたりの提供人数 <input type="number" id="set-temp-p" class="mt-1 border border-slate-300 p-1.5 rounded font-mono font-bold" min="0" step="0.1"></label>
+                                <label class="flex flex-col text-xs font-bold text-slate-600">好景気コスト (Y/回) <input type="number" id="set-temp-cA" class="mt-1 border border-slate-300 p-1.5 rounded font-mono font-bold" min="0"></label>
+                                <label class="flex flex-col text-xs font-bold text-slate-600">不景気コスト (Y/回) <input type="number" id="set-temp-cB" class="mt-1 border border-slate-300 p-1.5 rounded font-mono font-bold" min="0"></label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section>
+                    <h3 class="text-lg font-bold text-fuchsia-700 border-b-2 border-fuchsia-200 pb-1 mb-3 flex items-center gap-2"><span>🔄</span> 全体設定</h3>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <label class="flex flex-col text-xs font-bold text-slate-600">全ターン数 (1〜20) 
+                            <input type="number" id="set-total-turns" class="mt-1 border border-slate-300 p-1.5 rounded font-mono font-bold" min="1" max="20">
                         </label>
                     </div>
                 </section>
             </div>
             
-            <div class="mt-4 pt-3 border-t border-slate-800 shrink-0">
-                <button id="save-settings-btn" onclick="saveGameSettings()" class="w-full bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold py-3 rounded-xl shadow-lg transition-all border-b-4 border-fuchsia-800 flex justify-center items-center gap-2 text-sm sm:text-base">
+            <div class="mt-6 pt-4 border-t border-slate-200 shrink-0">
+                <button id="save-settings-btn" onclick="saveGameSettings()" class="w-full bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all border-b-4 border-fuchsia-800 flex justify-center items-center gap-2 text-lg">
                     <span>✅</span> 設定をゲームに反映する
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- ヘルプモーダル -->
-    <div id="help-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[90] p-3">
-        <div class="bg-slate-900 border border-slate-700 p-4 sm:p-6 rounded-2xl shadow-2xl w-full max-w-2xl slide-in relative border-t-8 border-teal-500 flex flex-col max-h-[92vh]">
-            <button onclick="document.getElementById('help-modal').classList.add('hidden')" class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 font-bold transition-colors z-10">✕</button>
-            <div class="text-center mb-4 shrink-0">
-                <span class="text-3xl mb-1 block">📖</span>
-                <h2 class="text-xl font-black text-white">ゲームの遊び方・ルール</h2>
+    <div id="help-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[90] p-4">
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-3xl slide-in relative border-t-8 border-teal-500 flex flex-col max-h-[90vh]">
+            <button onclick="document.getElementById('help-modal').classList.add('hidden')" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 font-bold transition-colors z-10">✕</button>
+            <div class="text-center mb-6 shrink-0">
+                <span class="text-4xl mb-2 block">📖</span>
+                <h2 class="text-2xl font-black text-slate-800">ゲームの遊び方・ルール</h2>
             </div>
             
-            <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-4 text-slate-300 text-xs">
+            <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-6 text-slate-700 text-sm">
                 <section>
-                    <h3 class="font-bold text-teal-400 border-b border-slate-800 pb-1 mb-1.5 flex items-center gap-1.5"><span>🎯</span> ゲームの目的</h3>
-                    <p class="text-slate-400">全ターンを生き残り、最も多くの資金（Y）を持っていた企業が勝利となります。資金がマイナスになると「破産」となります。</p>
+                    <h3 class="text-lg font-bold text-teal-700 border-b-2 border-teal-200 pb-1 mb-2 flex items-center gap-2"><span>🎯</span> ゲームの目的</h3>
+                    <p>全ターンを生き残り、最も多くの資金（Y）を持っていた企業が勝利となります。資金がマイナスになると「破産」となり、実質脱落となります（他の企業の市場競争は最後まで進行します）。</p>
                 </section>
                 
                 <section>
-                    <h3 class="font-bold text-teal-400 border-b border-slate-800 pb-1 mb-1.5 flex items-center gap-1.5"><span>🔄</span> ターンの流れ</h3>
-                    <ol class="list-decimal list-inside space-y-1 ml-1 text-slate-400">
-                        <li><strong>景気決定：</strong> 好景気か不景気が決まり、採用・発注コストが変動します。</li>
-                        <li><strong>入札フェイズ：</strong> 最安値を提示した1社のみが落札できます。</li>
-                        <li><strong>雇用フェイズ：</strong> 不足人員を正社員か発注で満たします。</li>
-                        <li><strong>清算：</strong> 利益が所持金に反映されます。</li>
+                    <h3 class="text-lg font-bold text-teal-700 border-b-2 border-teal-200 pb-1 mb-2 flex items-center gap-2"><span>🔄</span> ターンの流れ</h3>
+                    <ol class="list-decimal list-inside space-y-2 ml-1">
+                        <li><strong>景気決定：</strong> 抽選により「好景気」か「不景気」が決まります。数値設定で確率をカスタマイズ可能です。<strong>景気により採用・発注のコストが変動します。</strong></li>
+                        <li><strong>入札フェイズ：</strong> 大・中・小いずれかの工事を選び、1Y単位で入札します。一番<strong>安い金額（最安値）</strong>を提示した1社のみが落札（受注）できます。同額の場合は抽選になります。</li>
+                        <li><strong>雇用フェイズ：</strong> 落札できた場合、工事に必要な人数を満たすように人を雇います。</li>
+                        <li><strong>清算：</strong> 獲得した入札額から、人件費を引いた額が資金に反映されます。</li>
                     </ol>
                 </section>
 
                 <section>
-                    <h3 class="font-bold text-teal-400 border-b border-slate-800 pb-1 mb-1.5 flex items-center gap-1.5"><span>👷</span> 雇用とコスト</h3>
-                    <ul class="list-disc list-inside space-y-1 ml-1 text-slate-400 bg-slate-950 p-2.5 rounded-lg border border-slate-800">
-                        <li><strong id="help-fulltime-cost" class="text-slate-200">👨‍💼 正社員（維持費30Y）：</strong> 解雇不可ですが毎ターン固定費のみ。長期的に有利。</li>
-                        <li><strong id="help-temp-cost" class="text-slate-200">👷 発注・派遣：</strong> そのターン限りの人員。維持費なしで毎回景気コストがかかる。</li>
+                    <h3 class="text-lg font-bold text-teal-700 border-b-2 border-teal-200 pb-1 mb-2 flex items-center gap-2"><span>👷</span> 雇用とコストについて</h3>
+                    <p id="help-labor-text" class="mb-2">人数は 正社員:1人 / 発注・派遣:1人 として計算されます。</p>
+                    <ul class="list-disc list-inside space-y-2 ml-1 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <li><strong id="help-fulltime-cost">👨‍💼 正社員（採用費:発注と同額 / 維持費: 30Y）：</strong> 一度雇うと解雇できません。採用時は発注と同じ額がかかりますが、以降は毎ターン固定費(30Y)のみがかかります。長期的に見るとコストパフォーマンスに優れます。</li>
+                        <li><strong id="help-temp-cost">👷 発注・派遣（好景気40Y / 不景気50Y）：</strong> そのターン限りの人員です。維持費はかかりませんが、毎回景気に合わせたコストがかかります。</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3 class="text-lg font-bold text-teal-700 border-b-2 border-teal-200 pb-1 mb-2 flex items-center gap-2"><span>🏗</span> 各工事カードの詳細</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="bg-red-50 p-3 rounded border border-red-200">
+                            <h4 class="font-bold text-red-700 mb-1">大工事</h4>
+                            <p class="text-xs text-slate-600 mb-2">大きな利益を見込めますが、必要な人数も多くなります。</p>
+                            <ul class="text-xs space-y-0.5 font-bold">
+                                <li id="help-large-labor" class="text-gray-700">必要人数: 10人</li>
+                                <li id="help-large-max" class="text-pink-600">入札上限: 500Y</li>
+                            </ul>
+                        </div>
+                        <div class="bg-blue-50 p-3 rounded border border-blue-200">
+                            <h4 class="font-bold text-blue-700 mb-1">中工事</h4>
+                            <p class="text-xs text-slate-600 mb-2">バランスの良い工事です。中堅企業向け。</p>
+                            <ul class="text-xs space-y-0.5 font-bold">
+                                <li id="help-medium-labor" class="text-gray-700">必要人数: 7人</li>
+                                <li id="help-medium-max" class="text-pink-600">入札上限: 350Y</li>
+                            </ul>
+                        </div>
+                        <div class="bg-green-50 p-3 rounded border border-green-200">
+                            <h4 class="font-bold text-green-700 mb-1">小工事</h4>
+                            <p class="text-xs text-slate-600 mb-2">手軽に受注できますが、利益は少なめです。</p>
+                            <ul class="text-xs space-y-0.5 font-bold">
+                                <li id="help-small-labor" class="text-gray-700">必要人数: 4人</li>
+                                <li id="help-small-max" class="text-pink-600">入札上限: 200Y</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                
+                <section>
+                    <h3 class="text-lg font-bold text-teal-700 border-b-2 border-teal-200 pb-1 mb-2 flex items-center gap-2"><span>🤖</span> CPUの戦略について</h3>
+                    <p class="mb-2">設定から各CPUの性格を変更できます。</p>
+                    <ul class="list-disc list-inside space-y-1 ml-1 text-sm">
+                        <li><strong>自律適応型：</strong> 正社員雇用と発注の両方を経験した勝者のデータを学習し、状況に応じて柔軟に使い分ける賢いAI。プレイヤーの隙（独占状態）を検知すると横取りしてくることもあります。</li>
+                        <li><strong>完全外注特化：</strong> 正社員を雇わず、すべて派遣で賄う身軽な戦略。</li>
+                        <li><strong>完全正社員特化：</strong> 積極的に正社員を雇い、固定費をかけても受注を狙う戦略。</li>
                     </ul>
                 </section>
             </div>
             
-            <div class="mt-4 pt-3 border-t border-slate-800 shrink-0">
-                <button onclick="document.getElementById('help-modal').classList.add('hidden')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl shadow transition-colors text-xs">
+            <div class="mt-6 pt-4 border-t border-slate-200 shrink-0">
+                <button onclick="document.getElementById('help-modal').classList.add('hidden')" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl shadow transition-colors">
                     確認して閉じる
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- ロビーモーダル -->
-    <div id="lobby-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[90] p-3">
-        <div class="bg-slate-900 border border-slate-700 p-4 sm:p-6 rounded-2xl shadow-2xl w-full max-w-sm slide-in relative border-t-8 border-indigo-600">
-            <button onclick="document.getElementById('lobby-modal').classList.add('hidden')" class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 font-bold transition-colors">✕</button>
-            <div class="text-center mb-4">
-                <span class="text-3xl mb-1 block">🌐</span>
-                <h2 class="text-xl font-black text-white">オンライン対戦ロビー</h2>
-                <p class="text-xs text-slate-400 mt-0.5">Supabase Realtimeによるルーム対戦</p>
+    <div id="lobby-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[90] p-4">
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-md slide-in relative border-t-8 border-indigo-600">
+            <button onclick="document.getElementById('lobby-modal').classList.add('hidden')" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 font-bold transition-colors">✕</button>
+            <div class="text-center mb-6">
+                <span class="text-4xl mb-2 block">🌐</span>
+                <h2 class="text-2xl font-black text-slate-800">オンライン対戦ロビー</h2>
+                <p class="text-sm text-slate-500 mt-1">Supabase Realtimeによるルーム対戦</p>
             </div>
-            <div class="space-y-3 text-xs">
-                <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 space-y-1.5">
-                    <label class="block font-bold text-slate-300">あなたのプレイヤー名</label>
-                    <input type="text" id="online-player-name" class="w-full bg-slate-900 border border-slate-700 p-1.5 rounded-lg font-bold text-white text-xs" value="プレイヤー1">
+            <div class="space-y-4">
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                    <label class="block text-sm font-bold text-slate-700">あなたのプレイヤー名</label>
+                    <input type="text" id="online-player-name" class="w-full bg-white border border-slate-300 p-2 rounded-lg font-bold text-slate-800 text-sm" value="プレイヤー1">
                 </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="createRoom()" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold p-2.5 rounded-xl shadow-lg border-b-4 border-indigo-800 transition flex flex-col items-center gap-1">
-                        <span>🏠</span> ルーム作成
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="createRoom()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-3 px-3 rounded-xl shadow-lg border-b-4 border-indigo-800 transition text-sm flex flex-col items-center gap-1">
+                        <span>🏠</span> ルームを作成 (ホスト)
                     </button>
-                    <div class="flex flex-col gap-1">
-                        <input type="text" id="room-code-input" class="w-full bg-slate-900 border border-slate-700 p-1.5 rounded-lg text-center font-mono font-bold text-white text-xs uppercase" placeholder="コード">
-                        <button onclick="joinRoom()" id="join-btn-text" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold p-2 rounded-lg shadow border-b-4 border-emerald-800 transition text-[11px]">参加</button>
+                    <div class="flex flex-col gap-1.5">
+                        <input type="text" id="room-code-input" class="w-full bg-white border border-slate-300 p-1.5 rounded-lg text-center font-mono font-bold text-slate-800 text-xs uppercase" placeholder="コード入力">
+                        <button onclick="joinRoom()" id="join-btn-text" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-2 px-2 rounded-lg shadow border-b-4 border-emerald-800 transition text-xs">ルームに参加</button>
                     </div>
                 </div>
-                <div id="room-status-box" class="hidden bg-indigo-950/40 p-2.5 rounded-xl border border-indigo-900/60 text-center space-y-1.5">
-                    <p class="text-xs text-indigo-300 font-bold">コード: <span id="display-room-code" class="text-white font-mono text-sm bg-indigo-900/60 px-2 py-0.5 rounded">----</span></p>
-                    <p class="text-xs text-slate-400" id="room-member-count">参加者: 1 / 4人</p>
-                    <button id="start-online-game-btn" onclick="startOnlineGameHost()" class="hidden w-full bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-black py-2 rounded-lg shadow text-xs transition">オンライン対戦を開始</button>
+                <div id="room-status-box" class="hidden bg-indigo-50 p-3 rounded-xl border border-indigo-200 text-center space-y-2">
+                    <p class="text-sm text-indigo-700 font-bold">ルームコード: <span id="display-room-code" class="text-indigo-900 font-mono text-lg tracking-wider bg-indigo-100 px-2 py-0.5 rounded">----</span></p>
+                    <p class="text-sm text-slate-600" id="room-member-count">参加メンバー: 1 / 4人</p>
+                    <button id="start-online-game-btn" onclick="startOnlineGameHost()" class="hidden w-full bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-black py-2 rounded-lg shadow text-sm transition">オンライン対戦を開始する</button>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- CPU計算中モーダル -->
     <div id="cpu-calculating-modal" class="fixed inset-0 hidden flex justify-center items-center z-40 pointer-events-none">
-        <div id="cpu-calculating-dialog" class="bg-slate-900 border border-slate-700 p-6 rounded-2xl shadow-2xl text-center max-w-xs w-full flex flex-col items-center gap-3 slide-in border-t-8 border-indigo-600 pointer-events-auto cursor-move select-none">
-            <div class="text-4xl animate-bounce pointer-events-none">🤖</div>
-            <h2 class="text-base font-black text-white pointer-events-none">処理中...</h2>
-            <p class="text-xs text-slate-400 font-bold pointer-events-none">他のプレイヤーの入力を待機しています。</p>
+        <div id="cpu-calculating-dialog" class="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm w-full flex flex-col items-center gap-4 slide-in border-t-8 border-indigo-600 pointer-events-auto cursor-move select-none">
+            <div class="text-5xl animate-bounce pointer-events-none">🤖</div>
+            <h2 class="text-xl font-black text-slate-800 pointer-events-none">処理中...</h2>
+            <p class="text-sm text-slate-500 font-bold pointer-events-none">他のプレイヤーの入力を待機しています。</p>
         </div>
     </div>
 
-    <!-- AI戦略設定モーダル -->
-    <div id="sim-config-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[90] p-3">
-        <div class="bg-slate-900 border border-slate-700 p-4 sm:p-6 rounded-2xl shadow-2xl w-full max-w-sm slide-in relative border-t-8 border-slate-700">
-            <button onclick="closeConfigModal()" class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 font-bold transition-colors">✕</button>
-            <div class="text-center mb-3">
-                <span class="text-3xl mb-1 block">⚙</span>
-                <h2 class="text-lg font-black text-white">CPU戦略設定</h2>
-                <p class="text-xs font-bold text-slate-400 mt-0.5">AIが使用する戦略を設定します</p>
+    <div id="sim-config-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[90] p-4">
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-md slide-in relative border-t-8 border-slate-600">
+            <button onclick="closeConfigModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 font-bold transition-colors">✕</button>
+            <div class="text-center mb-6">
+                <span class="text-4xl mb-2 block">⚙</span>
+                <h2 class="text-2xl font-black text-slate-800">CPU戦略設定</h2>
+                <p class="text-sm font-bold text-slate-500 mt-1">AIが使用する戦略を設定します</p>
             </div>
-            <div class="space-y-2 mb-4 text-xs" id="cpu-strat-settings-container"></div>
-            <button onclick="closeConfigModal()" class="w-full bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-bold py-2.5 rounded-xl shadow-sm transition-all text-xs">設定を保存して閉じる</button>
+            <div class="space-y-3 mb-6" id="cpu-strat-settings-container">
+            </div>
+            <div class="flex flex-col gap-3">
+                <button onclick="closeConfigModal()" class="w-full bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-800 font-bold py-3 rounded-xl shadow-sm transition-all flex justify-center items-center gap-2"><span>🎮</span> 設定を保存して閉じる</button>
+            </div>
         </div>
     </div>
 
-    <!-- グラフモーダル -->
-    <div id="chart-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[100] p-3">
-        <div id="chart-modal-content" class="bg-slate-900 border border-slate-700 p-4 rounded-2xl shadow-2xl w-full max-w-3xl slide-in relative border-t-8 flex flex-col h-[75vh]">
-            <button onclick="closeChartModal()" class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 font-bold transition-colors z-20">✕</button>
-            <div class="text-center mb-2 shrink-0">
-                <h2 id="chart-modal-title" class="text-base font-black text-white">落札価格推移</h2>
-                <div class="flex justify-center items-center gap-4 mt-1 text-[11px] font-bold text-slate-400">
-                    <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full inline-block" id="legend-color-box"></span> 落札価格</div>
-                    <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span> 平均入札額</div>
+    <div id="chart-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[100] p-4">
+        <div id="chart-modal-content" class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-4xl slide-in relative border-t-8 flex flex-col h-[70vh]">
+            <button onclick="closeChartModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800 font-bold transition-colors z-20">✕</button>
+            <div class="text-center mb-4 shrink-0">
+                <h2 id="chart-modal-title" class="text-2xl font-black text-slate-800">落札価格推移</h2>
+                <div class="flex justify-center items-center gap-4 mt-2 text-xs font-bold text-slate-600">
+                    <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full inline-block" id="legend-color-box"></span> 落札価格</div>
+                    <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-purple-500 inline-block"></span> 平均入札額</div>
                 </div>
             </div>
-            <div class="flex-1 relative w-full h-full min-h-[220px] bg-slate-950 rounded-xl border border-slate-800 p-3">
-                <div id="modal-chart-large" class="absolute inset-3 hidden"><canvas id="chart-large"></canvas></div>
-                <div id="modal-chart-medium" class="absolute inset-3 hidden"><canvas id="chart-medium"></canvas></div>
-                <div id="modal-chart-small" class="absolute inset-3 hidden"><canvas id="chart-small"></canvas></div>
+            <div class="flex-1 relative w-full h-full min-h-[300px] bg-slate-50 rounded-xl border border-slate-200 p-4">
+                <div id="modal-chart-large" class="absolute inset-4 hidden"><canvas id="chart-large"></canvas></div>
+                <div id="modal-chart-medium" class="absolute inset-4 hidden"><canvas id="chart-medium"></canvas></div>
+                <div id="modal-chart-small" class="absolute inset-4 hidden"><canvas id="chart-small"></canvas></div>
             </div>
         </div>
     </div>
 
-    <!-- コインモーダル -->
     <div id="coin-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[90]">
-        <div class="bg-slate-900 border border-slate-700 p-6 rounded-2xl shadow-2xl text-center max-w-xs w-full">
-            <h2 class="text-lg font-black text-white mb-4" id="coin-toss-title">景気決定抽選</h2>
-            <div id="coin-visual" class="w-24 h-24 mx-auto rounded-full bg-yellow-400 border-6 border-yellow-500 flex items-center justify-center shadow-lg text-3xl font-bold text-yellow-900 mb-4">?</div>
-            <p id="coin-result-text" class="text-base font-bold h-6 text-slate-300"></p>
+        <div class="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm w-full">
+            <h2 class="text-2xl font-black text-slate-800 mb-8" id="coin-toss-title">景気決定抽選</h2>
+            <div id="coin-visual" class="w-32 h-32 mx-auto rounded-full bg-yellow-400 border-8 border-yellow-500 flex items-center justify-center shadow-lg text-4xl font-bold text-yellow-800 mb-8">?</div>
+            <p id="coin-result-text" class="text-xl font-bold h-8 text-slate-600"></p>
         </div>
     </div>
     
-    <!-- ルーレットモーダル -->
     <div id="roulette-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[90]">
-        <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl shadow-2xl text-center max-w-xs w-full border-4 border-yellow-400">
-            <h2 class="text-base font-black mb-1 text-white" id="roulette-title">同額入札！落札者抽選</h2>
-            <p class="text-xs font-bold text-slate-400 mb-4" id="roulette-desc"></p>
-            <div class="relative w-36 h-36 mx-auto mb-4">
-                <div id="roulette-wheel" class="w-full h-full rounded-full border-4 border-slate-700 shadow-inner relative overflow-hidden" style="background: conic-gradient(#7f1d1d 0 90deg, #1e3a8a 90deg 180deg, #065f46 180deg 270deg, #713f12 270deg 360deg);"></div>
-                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1.5 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[16px] border-t-red-500 z-10"></div>
+        <div class="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm w-full border-4 border-yellow-400">
+            <h2 class="text-2xl font-black mb-2 text-slate-800" id="roulette-title">同額入札！落札者抽選</h2>
+            <p class="text-sm font-bold text-gray-500 mb-6" id="roulette-desc"></p>
+            <div class="relative w-48 h-48 mx-auto mb-6">
+                <div id="roulette-wheel" class="w-full h-full rounded-full border-4 border-slate-200 shadow-inner relative overflow-hidden" style="background: conic-gradient(#fecaca 0 90deg, #bfdbfe 90deg 180deg, #bbf7d0 180deg 270deg, #fef08a 270deg 360deg);"></div>
+                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[20px] border-t-red-600 z-10 filter drop-shadow-md"></div>
             </div>
-            <div class="bg-slate-950 py-2 rounded-xl border border-slate-800"><p id="roulette-result-text" class="text-xl font-black text-red-400 h-6 flex items-center justify-center"></p></div>
+            <div class="bg-slate-100 py-3 rounded-xl border border-slate-200"><p id="roulette-result-text" class="text-2xl font-black text-red-600 h-8 flex items-center justify-center"></p></div>
         </div>
     </div>
     
-    <!-- 結果発表モーダル -->
-    <div id="result-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[90] p-3">
-        <div class="bg-slate-900 border border-slate-700 p-4 sm:p-6 rounded-2xl shadow-2xl w-full max-w-xl slide-in relative border-t-8 border-blue-600 max-h-[92vh] overflow-y-auto custom-scroll">
-            <button id="close-result-top-btn" class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 font-bold transition-colors">✕</button>
-            <div class="text-center mb-4"><span class="text-3xl mb-1 block">📢</span><h2 class="text-xl font-black text-white">入札結果発表</h2></div>
-            <div class="space-y-2.5 mb-6 text-xs">
-                <div class="flex items-center p-2.5 bg-red-950/20 border border-red-900/40 rounded-xl gap-3"><div class="w-1/4 font-black text-red-400 text-center text-sm">大工事</div><div class="w-3/4 flex justify-between items-center bg-slate-950 p-2 rounded-lg border border-red-950" id="res-large-content"></div></div>
-                <div class="flex items-center p-2.5 bg-blue-950/20 border border-blue-900/40 rounded-xl gap-3"><div class="w-1/4 font-black text-blue-400 text-center text-sm">中工事</div><div class="w-3/4 flex justify-between items-center bg-slate-950 p-2 rounded-lg border border-blue-950" id="res-medium-content"></div></div>
-                <div class="flex items-center p-2.5 bg-emerald-950/20 border border-emerald-900/40 rounded-xl gap-3"><div class="w-1/4 font-black text-emerald-400 text-center text-sm">小工事</div><div class="w-3/4 flex justify-between items-center bg-slate-950 p-2 rounded-lg border border-emerald-950" id="res-small-content"></div></div>
+    <div id="result-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[90] p-4">
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-2xl slide-in relative border-t-8 border-blue-600">
+            <button id="close-result-top-btn" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800 font-bold transition-colors">✕</button>
+            <div class="text-center mb-6"><span class="text-4xl mb-2 block">📢</span><h2 class="text-2xl font-black text-slate-800">入札結果発表</h2></div>
+            <div class="space-y-4 mb-8">
+                <div class="flex flex-col sm:flex-row items-center p-4 bg-red-50 border-2 border-red-200 rounded-xl gap-4"><div class="w-full sm:w-1/4 font-black text-red-700 text-center sm:text-left text-lg">🏢 大工事</div><div class="w-full sm:w-3/4 flex justify-between items-center bg-white p-3 rounded-lg border border-red-100 shadow-sm" id="res-large-content"></div></div>
+                <div class="flex flex-col sm:flex-row items-center p-4 bg-blue-50 border-2 border-blue-200 rounded-xl gap-4"><div class="w-full sm:w-1/4 font-black text-blue-700 text-center sm:text-left text-lg">🏬 中工事</div><div class="w-full sm:w-3/4 flex justify-between items-center bg-white p-3 rounded-lg border border-blue-100 shadow-sm" id="res-medium-content"></div></div>
+                <div class="flex flex-col sm:flex-row items-center p-4 bg-green-50 border-2 border-green-200 rounded-xl gap-4"><div class="w-full sm:w-1/4 font-black text-green-700 text-center sm:text-left text-lg">🏠 小工事</div><div class="w-full sm:w-3/4 flex justify-between items-center bg-white p-3 rounded-lg border border-green-100 shadow-sm" id="res-small-content"></div></div>
             </div>
-            <button id="close-result-btn" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all border-b-4 border-slate-950 flex justify-center items-center gap-2 text-sm">確認して次へ進む <span>➔</span></button>
+            <button id="close-result-btn" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg transition-all border-b-4 border-slate-950 flex justify-center items-center gap-2 text-lg">確認して次へ進む <span>➔</span></button>
         </div>
     </div>
     
-    <!-- プレイヤー履歴モーダル -->
-    <div id="history-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[100] p-3">
-        <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl shadow-2xl w-full max-w-4xl slide-in relative flex flex-col max-h-[90vh]">
-            <button onclick="closeHistoryModal()" class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 font-bold z-10">✕</button>
-            <div class="mb-3 border-b border-slate-800 pb-2 flex items-center gap-2"><span class="text-xl">📊</span><h2 class="text-base font-black text-white" id="history-title">プレイヤー履歴</h2></div>
-            <div class="flex-1 overflow-hidden flex flex-col md:flex-row gap-3 min-h-[300px] text-xs">
-                <div class="w-full md:w-1/2 overflow-y-auto custom-scroll pr-1" id="history-content"></div>
-                <div class="w-full md:w-1/2 bg-slate-950 rounded-xl border border-slate-800 p-3 relative flex flex-col"><h3 class="text-center font-bold text-slate-400 mb-1.5 text-xs">所持チップ推移</h3><div class="flex-1 relative w-full h-full min-h-[180px]"><canvas id="history-chart"></canvas></div></div>
+    <div id="history-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[100] p-4">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-5xl slide-in relative flex flex-col max-h-[90vh]">
+            <button onclick="closeHistoryModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 font-bold z-10">✕</button>
+            <div class="mb-4 border-b border-slate-200 pb-3 flex items-center gap-2"><span class="text-2xl">📊</span><h2 class="text-xl font-black text-slate-800" id="history-title">プレイヤー履歴</h2></div>
+            <div class="flex-1 overflow-hidden flex flex-col md:flex-row gap-4 min-h-[400px]">
+                <div class="w-full md:w-1/2 overflow-y-auto custom-scroll pr-2" id="history-content"></div>
+                <div class="w-full md:w-1/2 bg-slate-50 rounded-xl border border-slate-200 p-4 relative flex flex-col"><h3 class="text-center font-bold text-slate-600 mb-2">所持チップ推移</h3><div class="flex-1 relative w-full h-full"><canvas id="history-chart"></canvas></div></div>
             </div>
-            <div class="mt-3 pt-3 border-t border-slate-800"><button onclick="closeHistoryModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2.5 rounded-xl text-xs">閉じる</button></div>
+            <div class="mt-4 pt-4 border-t border-slate-200"><button onclick="closeHistoryModal()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-3 rounded-xl">閉じる</button></div>
         </div>
     </div>
 
     <!-- 全プレイヤー所持金推移モーダル -->
-    <div id="all-history-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[110] p-3">
-        <div class="bg-slate-900 border border-slate-700 p-4 rounded-2xl shadow-2xl w-full max-w-3xl slide-in relative flex flex-col h-[75vh] border-t-8 border-teal-500">
-            <button onclick="closeAllHistoryModal()" class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 font-bold z-10">✕</button>
-            <div class="mb-3 border-b border-slate-800 pb-2 flex items-center gap-2">
-                <span class="text-xl">📈</span><h2 class="text-base font-black text-white">全プレイヤーの所持金推移</h2>
+    <div id="all-history-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[110] p-4">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-4xl slide-in relative flex flex-col h-[70vh] border-t-8 border-teal-500">
+            <button onclick="closeAllHistoryModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 font-bold z-10">✕</button>
+            <div class="mb-4 border-b border-slate-200 pb-3 flex items-center gap-2">
+                <span class="text-2xl">📈</span><h2 class="text-xl font-black text-slate-800">全プレイヤーの所持金推移</h2>
             </div>
-            <div class="flex-1 relative w-full h-full bg-slate-950 rounded-xl border border-slate-800 p-3">
+            <div class="flex-1 relative w-full h-full bg-slate-50 rounded-xl border border-slate-200 p-4">
                 <canvas id="all-history-chart"></canvas>
             </div>
-            <div class="mt-3 pt-3 border-t border-slate-800">
-                <button onclick="closeAllHistoryModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2.5 rounded-xl transition-all text-xs">閉じる</button>
+            <div class="mt-4 pt-4 border-t border-slate-200">
+                <button onclick="closeAllHistoryModal()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-3 rounded-xl transition-all">閉じる</button>
             </div>
         </div>
     </div>
     
-    <!-- ランキングモーダル -->
-    <div id="ranking-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[100] p-3">
-        <div class="bg-slate-900 border border-slate-700 p-6 rounded-3xl shadow-2xl w-full max-w-md slide-in text-center border-4 border-yellow-400 overflow-hidden relative max-h-[92vh] overflow-y-auto custom-scroll">
-            <div class="absolute inset-0 bg-gradient-to-br from-yellow-950/20 to-slate-900 -z-10"></div>
-            <h2 class="text-2xl sm:text-3xl font-black mb-1 text-yellow-400 drop-shadow-sm">🏁 ゲーム終了！</h2>
-            <p class="text-slate-400 font-bold mb-4 text-xs">最終ランキング</p>
-            <div id="ranking-container" class="space-y-2.5 mb-6 text-left"></div>
-            <div id="ranking-buttons" class="mt-2 flex flex-col gap-2"></div>
+    <div id="ranking-modal" class="fixed inset-0 modal-bg hidden flex justify-center items-center z-[100] p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-lg slide-in text-center border-4 border-yellow-400 overflow-hidden relative">
+            <div class="absolute inset-0 bg-gradient-to-br from-yellow-50 to-white -z-10"></div>
+            <h2 class="text-4xl font-black mb-2 text-yellow-600 drop-shadow-sm">🏁 ゲーム終了！</h2><p class="text-gray-500 font-bold mb-8">ランキング</p>
+            <div id="ranking-container" class="space-y-3 mb-8 text-left"></div>
+            <div id="ranking-buttons" class="mt-4 flex flex-col gap-3"></div>
         </div>
     </div>
 
@@ -646,9 +681,9 @@
         let economyProbability = 50; 
 
         let projects = { 
-            large: { name: '大工事', maxBid: 500, labor: 10, color: '#f87171' }, 
-            medium: { name: '中工事', maxBid: 350, labor: 7, color: '#60a5fa' }, 
-            small: { name: '小工事', maxBid: 200, labor: 4, color: '#34d399' } 
+            large: { name: '大工事', maxBid: 500, labor: 10 }, 
+            medium: { name: '中工事', maxBid: 350, labor: 7 }, 
+            small: { name: '小工事', maxBid: 200, labor: 4 } 
         };
         
         let laborConfig = {
@@ -747,7 +782,7 @@
             const ecoBar = document.getElementById('economy-status');
             if(ecoBar) {
                 ecoBar.innerHTML = '🪙 景気：未定';
-                ecoBar.className = 'px-2.5 py-1 rounded-lg font-black text-xs sm:text-sm bg-slate-800 text-slate-300 shadow border border-slate-700 flex items-center whitespace-nowrap shrink-0 ml-2';
+                ecoBar.className = 'px-3 py-1.5 rounded-lg font-black text-base sm:text-lg bg-gray-500 text-white shadow-md border border-gray-600 flex items-center whitespace-nowrap shrink-0';
             }
 
             if (charts && Object.keys(charts).length > 0) {
@@ -856,7 +891,7 @@
             btn.innerHTML = '<span>⏳</span> 反映中...';
             btn.disabled = true;
 
-            await new Promise(r => setTimeout(r, 400));
+            await new Promise(r => setTimeout(r, 500));
 
             try {
                 initialMoney = parseInt(document.getElementById('set-init-money').value) || 0;
@@ -929,13 +964,17 @@
                 document.getElementById(`labor-${key}`).textContent = `${projects[key].labor}`;
                 document.getElementById(`maxbid-${key}`).textContent = `上限:${projects[key].maxBid}Y`;
                 
+                document.getElementById(`help-${key}-max`).textContent = `入札上限: ${projects[key].maxBid}Y`;
+                document.getElementById(`help-${key}-labor`).textContent = `必要人数: ${projects[key].labor}人`;
+                
                 const bidAmountElement = document.getElementById('bid-amount');
                 if (selectedBiddingProject === key) {
                     bidAmountElement.max = projects[key].maxBid;
                 }
             });
             
-            document.getElementById('help-fulltime-cost').textContent = `👨‍‍💼 正社員（維持費: ${laborConfig.fulltimeCost}Y）：`;
+            document.getElementById('help-labor-text').textContent = `人数は 正社員:${laborConfig.fulltimeP}人 / 発注・派遣:${laborConfig.tempP}人 として計算されます。`;
+            document.getElementById('help-fulltime-cost').textContent = `👨‍💼 正社員（採用費:発注と同額 / 維持費: ${laborConfig.fulltimeCost}Y）：`;
             document.getElementById('help-temp-cost').textContent = `👷 発注・派遣（好景気${laborConfig.tempCostA}Y / 不景気${laborConfig.tempCostB}Y）：`;
             
             updateEconomyHighlight();
@@ -964,14 +1003,14 @@
             for(let i=0; i<4; i++) {
                 const p = players[i];
                 container.innerHTML += `
-                    <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-lg border border-slate-800">
-                        <label class="font-bold text-slate-300 text-xs flex flex-col">
+                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <label class="font-bold text-slate-700 text-sm flex flex-col">
                             <span>${p.name}</span>
-                            ${p.isCPU ? '<span class="text-[9px] text-slate-500 font-normal">CPU</span>' : '<span class="text-[9px] text-emerald-400 font-bold">人間(代行AI設定)</span>'}
+                            ${p.isCPU ? '<span class="text-[10px] text-slate-400 font-normal">CPU</span>' : '<span class="text-[10px] text-emerald-500 font-bold">人間(代行AI設定)</span>'}
                         </label>
-                        <select id="strat-cpu-${i}" onchange="updateStrategies()" class="border border-slate-700 rounded p-1 text-xs font-bold text-white bg-slate-900">
+                        <select id="strat-cpu-${i}" onchange="updateStrategies()" class="border border-slate-300 rounded p-1.5 text-sm font-bold text-slate-700 bg-white">
                             <option value="adaptive" ${aiStrategies[i]==='adaptive'?'selected':''}>自律適応型</option>
-                            <option value="outsource" ${aiStrategies[i]==='outsource'?'selected':''}>完全外注(派遣)</option>
+                            <option value="outsource" ${aiStrategies[i]==='outsource'?'selected':''}>完全外注特化</option>
                             <option value="fulltime" ${aiStrategies[i]==='fulltime'?'selected':''}>完全正社員</option>
                         </select>
                     </div>`;
@@ -1032,7 +1071,7 @@
                 document.getElementById('ai-status').classList.remove('hidden');
             } catch (error) {
                 console.error("ログ読み込みエラー:", error);
-                const aiStatus = document.getElementById('ai-status'); aiStatus.textContent = '⚠ 学習データなし'; aiStatus.classList.remove('hidden', 'bg-emerald-500/20'); aiStatus.classList.add('bg-amber-500/20', 'text-amber-400');
+                const aiStatus = document.getElementById('ai-status'); aiStatus.textContent = '⚠ 学習データなし'; aiStatus.classList.remove('hidden', 'bg-emerald-500'); aiStatus.classList.add('bg-amber-500');
             } finally {
                 if(welcomeStartBtn) { 
                     welcomeStartBtn.disabled = false; 
@@ -1071,19 +1110,19 @@
                                 borderColor: projects[key].color, 
                                 backgroundColor: projects[key].color, 
                                 pointBackgroundColor: [], 
-                                pointBorderColor: '#0f172a', 
-                                pointRadius: 4, 
+                                pointBorderColor: '#fff', 
+                                pointRadius: 6, 
                                 tension: 0.2, 
                                 spanGaps: false 
                             },
                             { 
                                 label: projects[key].name + ' 平均入札額', 
                                 data: [], 
-                                borderColor: '#c084fc', 
-                                backgroundColor: '#c084fc', 
+                                borderColor: '#a855f7', 
+                                backgroundColor: '#a855f7', 
                                 pointBackgroundColor: [], 
-                                pointBorderColor: '#0f172a', 
-                                pointRadius: 3, 
+                                pointBorderColor: '#fff', 
+                                pointRadius: 4, 
                                 tension: 0.2, 
                                 spanGaps: false 
                             }
@@ -1093,10 +1132,7 @@
                         responsive: true, 
                         maintainAspectRatio: false, 
                         plugins: { legend: { display: false }, title: { display: false } }, 
-                        scales: { 
-                            y: { min: 0, max: projects[key].maxBid, ticks: { stepSize: 50, color: '#94a3b8', font: {size: 10} }, grid: { color: '#1e293b' } }, 
-                            x: { min: 1, max: totalTurns, ticks: { stepSize: 1, color: '#94a3b8', font: {size: 10} }, grid: { color: '#1e293b' } } 
-                        } 
+                        scales: { y: { min: 0, max: projects[key].maxBid, ticks: { stepSize: 50 } }, x: { min: 1, max: totalTurns, ticks: { stepSize: 1 } } } 
                     } 
                 });
             });
@@ -1114,10 +1150,10 @@
             const legendColorBox = document.getElementById('legend-color-box');
             if(legendColorBox) legendColorBox.style.backgroundColor = projects[projKey].color;
 
-            content.classList.remove('border-red-500', 'border-blue-500', 'border-emerald-500');
+            content.classList.remove('border-red-500', 'border-blue-500', 'border-green-500');
             if (projKey === 'large') content.classList.add('border-red-500');
             if (projKey === 'medium') content.classList.add('border-blue-500');
-            if (projKey === 'small') content.classList.add('border-emerald-500');
+            if (projKey === 'small') content.classList.add('border-green-500');
             
             modal.classList.remove('hidden');
             setTimeout(() => { if (charts[projKey]) { charts[projKey].resize(); charts[projKey].update(); } }, 50);
@@ -1138,7 +1174,7 @@
             }
             if (amount !== null) { 
                 dataArr.push({x: currentTurn, y: amount}); 
-                colorArr.push(eco === 'A' ? '#f472b6' : '#60a5fa'); 
+                colorArr.push(eco === 'A' ? 'rgb(236, 72, 153)' : 'rgb(59, 130, 246)'); 
             } else { 
                 dataArr.push({x: currentTurn, y: null}); 
                 colorArr.push('transparent'); 
@@ -1146,7 +1182,7 @@
 
             if (avgBid !== null && avgBid !== undefined && !isNaN(avgBid)) {
                 avgDataArr.push({x: currentTurn, y: avgBid});
-                avgColorArr.push('#c084fc');
+                avgColorArr.push('#a855f7');
             } else {
                 avgDataArr.push({x: currentTurn, y: null});
                 avgColorArr.push('transparent');
@@ -1206,24 +1242,24 @@
             playersContainer.innerHTML = '';
             players.forEach((p, idx) => {
                 const isMe = idx === myPlayerIndex;
-                const bg = isMe ? 'bg-blue-950/40 border-blue-500/60 shadow-sm' : 'bg-slate-950/60 border-slate-800'; 
+                const bg = isMe ? 'bg-blue-50 border-blue-300 shadow-sm' : 'bg-slate-50 border-slate-200'; 
                 const opacity = p.isDefaulter ? 'opacity-60 grayscale' : '';
-                const defaultLabel = p.isDefaulter ? '<span class="text-[9px] bg-red-600 text-white px-1.5 py-0.2 rounded-full font-bold ml-1">破産</span>' : '';
-                const roleBadge = isMe ? '<span class="text-[9px] bg-indigo-600 text-white px-1 py-0.2 rounded font-bold ml-1">あなた</span>' : '';
-                const typeLabel = p.isCPU ? '<span class="text-[9px] font-bold text-slate-400 ml-1 border border-slate-700 px-1 rounded bg-slate-900">' + strategyLabels[aiStrategies[p.id]] + '</span>' : '<span class="text-[9px] font-bold text-emerald-400 ml-1 border border-emerald-800 px-1 rounded bg-emerald-950/40">人間</span>';
+                const defaultLabel = p.isDefaulter ? '<span class="text-[10px] bg-red-600 text-white px-2 py-0.5 rounded-full font-bold ml-2 shadow-sm">破産</span>' : '';
+                const roleBadge = isMe ? '<span class="text-[10px] bg-indigo-600 text-white px-1.5 py-0.5 rounded font-bold ml-1">あなた</span>' : '';
+                const typeLabel = p.isCPU ? '<span class="text-[10px] font-bold text-slate-500 ml-1 border border-slate-300 px-1 rounded bg-white">' + strategyLabels[aiStrategies[p.id]] + '</span>' : '<span class="text-[10px] font-bold text-emerald-600 ml-1 border border-emerald-300 px-1 rounded bg-emerald-50">人間</span>';
                 
                 playersContainer.innerHTML += `
-                    <div class="border rounded-xl p-1.5 sm:p-2 ${bg} ${opacity} transition-all relative flex flex-col justify-between h-full">
-                        <div class="font-bold border-b border-slate-800/80 pb-0.5 mb-1 flex justify-between items-center">
-                            <div class="flex items-center text-slate-200 text-xs truncate mr-1">
-                                ${isMe ? '👤' : (p.isCPU ? '🤖' : '🧑‍💻')} <span class="truncate">${p.name}</span> ${typeLabel} ${roleBadge} ${defaultLabel}
+                    <div class="border-2 rounded-xl p-1.5 sm:p-2 ${bg} ${opacity} transition-all relative flex flex-col justify-between h-full">
+                        <div class="font-bold border-b border-slate-200 pb-0.5 mb-1 flex justify-between items-center">
+                            <div class="flex items-center text-slate-800 text-xs sm:text-sm whitespace-nowrap overflow-hidden text-ellipsis mr-1">
+                                ${isMe ? '👤' : (p.isCPU ? '🤖' : '🧑‍💻')} ${p.name} ${typeLabel} ${roleBadge} ${defaultLabel}
                             </div>
-                            <button onclick="showPlayerHistory(${p.id})" class="text-[9px] bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 px-1 py-0.5 rounded shadow-sm font-bold shrink-0">📊</button>
+                            <button onclick="showPlayerHistory(${p.id})" class="text-[9px] bg-white border border-slate-300 text-slate-600 hover:bg-slate-100 px-1.5 py-0.5 rounded shadow-sm font-bold shrink-0">📊</button>
                         </div>
-                        <div class="text-[10px] grid grid-cols-2 gap-y-0.5 gap-x-1 font-medium">
-                            <div class="text-slate-400 leading-tight">資金:<br><span class="font-black text-xs sm:text-sm ${p.money < 0 ? 'text-red-400' : 'text-white'}">${p.money} <span class="text-[9px]">Y</span></span></div>
-                            <div class="text-slate-400 text-right leading-tight">人数:<br><span class="font-black text-xs sm:text-sm text-white">${((p.employees * laborConfig.fulltimeP) + (p.temps * laborConfig.tempP)).toFixed(1).replace(/\.0$/, '')} <span class="text-[9px]">人</span></span></div>
-                            <div class="col-span-2 text-[10px] font-bold text-blue-300 bg-blue-950/30 p-0.5 rounded text-center mt-0.5 border border-blue-900/40">👨‍💼 正社員: ${p.employees} 人</div>
+                        <div class="text-[10px] sm:text-xs grid grid-cols-2 gap-y-0.5 gap-x-1 font-medium">
+                            <div class="text-slate-500 leading-tight">資金:<br><span class="font-black text-sm sm:text-base ${p.money < 0 ? 'text-red-600' : 'text-slate-800'}">${p.money} <span class="text-[9px]">Y</span></span></div>
+                            <div class="text-slate-500 text-right leading-tight">人数:<br><span class="font-black text-sm sm:text-base text-slate-800">${((p.employees * laborConfig.fulltimeP) + (p.temps * laborConfig.tempP)).toFixed(1).replace(/\.0$/, '')} <span class="text-[9px]">人</span></span></div>
+                            <div class="col-span-2 text-[10px] font-bold text-blue-700 bg-blue-100/50 p-0.5 rounded text-center mt-0.5">👨‍💼 正社員: ${p.employees} 人</div>
                         </div>
                     </div>`;
             });
@@ -1236,12 +1272,12 @@
 
             const ecoBar = document.getElementById('economy-status');
             if (currentEconomy === 'A') { 
-                ecoBar.innerHTML = `🪙 景気：<span class="text-pink-300 mx-1">好景気</span><span class="text-[10px] ml-1 text-pink-200 font-bold border border-pink-500/50 bg-pink-950/60 px-1.5 py-0.5 rounded whitespace-nowrap">維持${fCost}Y / 発注${tCost}Y</span>`; 
-                ecoBar.className = 'px-2.5 py-1 rounded-lg font-black text-xs sm:text-sm bg-pink-950/80 text-white shadow border border-pink-700 flex items-center whitespace-nowrap shrink-0 ml-2'; 
+                ecoBar.innerHTML = `🪙 景気：<span class="text-pink-200 mx-1">好景気</span><span class="text-[10px] sm:text-xs ml-1 text-pink-100 font-bold border border-pink-400 bg-pink-700/50 px-1.5 py-0.5 rounded whitespace-nowrap">維持${fCost}Y / 新規・発注${tCost}Y</span>`; 
+                ecoBar.className = 'px-3 py-1.5 rounded-lg font-black text-sm sm:text-base bg-pink-600 text-white shadow-md border border-pink-700 flex items-center whitespace-nowrap shrink-0'; 
             } 
             else if(currentEconomy === 'B') { 
-                ecoBar.innerHTML = `🪙 景気：<span class="text-blue-300 mx-1">不景気</span><span class="text-[10px] ml-1 text-blue-200 font-bold border border-blue-500/50 bg-blue-950/60 px-1.5 py-0.5 rounded whitespace-nowrap">維持${fCost}Y / 発注${tCost}Y</span>`; 
-                ecoBar.className = 'px-2.5 py-1 rounded-lg font-black text-xs sm:text-sm bg-blue-950/80 text-white shadow border border-blue-700 flex items-center whitespace-nowrap shrink-0 ml-2'; 
+                ecoBar.innerHTML = `🪙 景気：<span class="text-blue-200 mx-1">不景気</span><span class="text-[10px] sm:text-xs ml-1 text-blue-100 font-bold border border-blue-400 bg-blue-700/50 px-1.5 py-0.5 rounded whitespace-nowrap">維持${fCost}Y / 新規・発注${tCost}Y</span>`; 
+                ecoBar.className = 'px-3 py-1.5 rounded-lg font-black text-sm sm:text-base bg-blue-600 text-white shadow-md border border-blue-700 flex items-center whitespace-nowrap shrink-0'; 
             }
         }
 
@@ -1252,7 +1288,7 @@
             title.textContent = `${player.name} の履歴`; content.innerHTML = '';
             
             for (let t = 1; t <= totalTurns; t++) {
-                let rowHtml = `<div class="flex items-center p-2 border-b border-slate-800 ${t % 2 === 0 ? 'bg-slate-900/60' : 'bg-slate-950'} rounded-lg mb-1"><div class="w-1/3 font-black text-slate-400 text-xs">第${t}ターン</div>`;
+                let rowHtml = `<div class="flex items-center p-3 border-b border-slate-100 ${t % 2 === 0 ? 'bg-slate-50' : 'bg-white'} rounded-lg mb-1"><div class="w-1/3 font-black text-slate-500 text-sm">第${t}ターン</div>`;
                 if (t <= currentTurn && player.history.length >= t) { 
                     const r = player.history[t-1]; 
                     if (r && r.project && r.project !== 'pass' && r.project !== 'none') {
@@ -1260,36 +1296,21 @@
                         let bidAmt = r.bidAmount !== undefined ? r.bidAmount : r.amount;
                         
                         if (isWin) {
-                            rowHtml += `<div class="w-2/3 text-emerald-300 font-bold text-xs flex justify-between items-center bg-emerald-950/40 px-2 py-1 rounded border border-emerald-900/50"><span>${projects[r.project].name}</span><span class="font-black">${bidAmt}Y</span></div>`;
+                            rowHtml += `<div class="w-2/3 text-emerald-700 font-bold text-sm flex justify-between items-center bg-emerald-50 px-2 py-1 rounded border border-emerald-200"><span>${projects[r.project].name}</span><span class="font-black">${bidAmt}Y</span></div>`;
                         } else {
                             let winAmtText = r.winningAmount ? `(${r.winningAmount}Y)` : '(なし)';
-                            rowHtml += `<div class="w-2/3 text-rose-300 font-bold text-xs flex justify-between items-center bg-rose-950/40 px-2 py-1 rounded border border-rose-900/50"><span>${projects[r.project].name}</span><span class="font-black"><span class="text-[10px] font-normal text-rose-400 mr-1">${winAmtText}</span>${bidAmt}Y</span></div>`;
+                            rowHtml += `<div class="w-2/3 text-rose-700 font-bold text-sm flex justify-between items-center bg-rose-50 px-2 py-1 rounded border border-rose-200"><span>${projects[r.project].name}</span><span class="font-black"><span class="text-[10px] font-normal text-rose-500 mr-1">${winAmtText}</span>${bidAmt}Y</span></div>`;
                         }
                     } else { 
-                        rowHtml += `<div class="w-2/3 text-slate-500 font-bold text-xs bg-slate-900 px-2 py-1 rounded text-center border border-slate-800">パス</div>`; 
+                        rowHtml += `<div class="w-2/3 text-slate-400 font-bold text-sm bg-slate-100 px-2 py-1 rounded text-center border border-slate-200">パス</div>`; 
                     } 
                 } else { 
-                    rowHtml += `<div class="w-2/3 text-slate-600 font-bold text-center">-</div>`; 
+                    rowHtml += `<div class="w-2/3 text-slate-300 font-bold text-center">-</div>`; 
                 }
                 content.innerHTML += rowHtml + `</div>`;
             }
             if (historyChartInstance) historyChartInstance.destroy();
-            historyChartInstance = new Chart(document.getElementById('history-chart').getContext('2d'), { 
-                type: 'line', 
-                data: { 
-                    labels: Array.from({length: player.moneyHistory.length}, (_, i) => `T${i}`), 
-                    datasets: [{ label: '所持チップ (Y)', data: player.moneyHistory, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 2, pointBackgroundColor: '#3b82f6', pointBorderColor: '#0f172a', tension: 0.1, fill: true }] 
-                }, 
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { ticks: { color: '#94a3b8', font: {size: 9} }, grid: { color: '#1e293b' } },
-                        x: { ticks: { color: '#94a3b8', font: {size: 9} }, grid: { color: '#1e293b' } }
-                    }
-                } 
-            });
+            historyChartInstance = new Chart(document.getElementById('history-chart').getContext('2d'), { type: 'line', data: { labels: Array.from({length: player.moneyHistory.length}, (_, i) => `Turn ${i}`), datasets: [{ label: '所持チップ (Y)', data: player.moneyHistory, borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', borderWidth: 2, pointBackgroundColor: '#2563eb', pointBorderColor: '#fff', tension: 0.1, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
             modal.classList.remove('hidden');
         };
         window.closeHistoryModal = function() { document.getElementById('history-modal').classList.add('hidden'); };
@@ -1310,8 +1331,8 @@
                     backgroundColor: 'transparent',
                     borderWidth: 2,
                     pointBackgroundColor: colors[i % colors.length],
-                    pointBorderColor: '#0f172a',
-                    pointRadius: 3,
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
                     tension: 0.1
                 };
             });
@@ -1330,11 +1351,11 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { display: true, position: 'top', labels: { color: '#cbd5e1', font: {size: 10} } }
+                            legend: { display: true, position: 'top' }
                         },
                         scales: {
-                            y: { ticks: { color: '#94a3b8', font: {size: 10} }, grid: { color: '#1e293b' } },
-                            x: { ticks: { color: '#94a3b8', font: {size: 10} }, grid: { color: '#1e293b' } }
+                            y: { beginAtZero: false, ticks: { stepSize: 50 } },
+                            x: { beginAtZero: true }
                         }
                     }
                 });
@@ -1377,7 +1398,7 @@
             isBiddingPhase = false;
 
             if (currentTurn === totalTurns) {
-                document.getElementById('coin-toss-title').innerHTML = `<span class="text-red-400">最終ターン</span><br>景気決定抽選`;
+                document.getElementById('coin-toss-title').innerHTML = `<span class="text-red-600">最終ターン</span><br>景気決定抽選`;
             } else {
                 document.getElementById('coin-toss-title').innerHTML = `第 ${currentTurn} ターン<br>景気決定抽選`;
             }
@@ -1385,19 +1406,19 @@
             coinModal.classList.remove('hidden'); 
             coinVisual.classList.add('coin-flip'); 
             coinVisual.textContent = ''; 
-            coinVisual.className = 'w-24 h-24 mx-auto rounded-full bg-yellow-400 border-6 border-yellow-500 flex items-center justify-center shadow-lg text-3xl font-bold text-yellow-900 mb-4 coin-flip';
+            coinVisual.className = 'w-32 h-32 mx-auto rounded-full bg-yellow-400 border-8 border-yellow-500 flex items-center justify-center shadow-lg text-4xl font-bold text-yellow-800 mb-8 coin-flip';
             coinText.textContent = '景気を決定中...';
             
-            await new Promise(r => setTimeout(r, 1200));
+            await new Promise(r => setTimeout(r, 1500));
             
             coinVisual.classList.remove('coin-flip');
             currentEconomy = economy;
             
             coinVisual.textContent = currentEconomy; 
-            coinVisual.className = `w-24 h-24 mx-auto rounded-full flex items-center justify-center shadow-2xl text-5xl font-black text-white mb-4 border-6 ${currentEconomy === 'A' ? 'bg-pink-500 border-pink-600 shadow-pink-500/40' : 'bg-blue-500 border-blue-600 shadow-blue-500/40'}`;
+            coinVisual.className = `w-32 h-32 mx-auto rounded-full flex items-center justify-center shadow-2xl text-6xl font-black text-white mb-6 border-8 ${currentEconomy === 'A' ? 'bg-pink-400 border-pink-500 shadow-pink-500/40' : 'bg-blue-400 border-blue-500 shadow-blue-500/40'}`;
             coinText.textContent = currentEconomy === 'A' ? '好景気' : '不景気';
             
-            await new Promise(r => setTimeout(r, 1200)); 
+            await new Promise(r => setTimeout(r, 1500)); 
             coinModal.classList.add('hidden');
             
             updateEconomyHighlight();
@@ -1414,7 +1435,7 @@
         window.selectProject = function(projKey) {
             if (!isBiddingPhase) return;
             selectedBiddingProject = projKey;
-            ['large', 'medium', 'small'].forEach(key => { const card = document.getElementById(`card-${key}`); if (key === projKey) card.classList.add('ring-2', 'ring-blue-400', 'scale-[1.02]'); else card.classList.remove('ring-2', 'ring-blue-400', 'scale-[1.02]'); });
+            ['large', 'medium', 'small'].forEach(key => { const card = document.getElementById(`card-${key}`); if (key === projKey) card.classList.add('ring-4', 'ring-blue-400', 'scale-105'); else card.classList.remove('ring-4', 'ring-blue-400', 'scale-105'); });
             
             const currentMaxBid = projects[projKey].maxBid;
             document.getElementById('bidding-inputs').classList.remove('hidden'); document.getElementById('selected-project-name').textContent = projects[projKey].name + ` (上限${currentMaxBid}Y)`; 
@@ -1433,8 +1454,7 @@
                 const proj = selectedBiddingProject; const amount = parseInt(bidAmountInput.value, 10) || 0;
                 if (proj !== 'none') {
                     const currentMaxBid = projects[proj].maxBid;
-                    if (amount % 5 !== 0) { alert('入札価格は5の倍数にしてください'); return; }
-                    if (amount > currentMaxBid || amount < 0) { alert('入札価格が不正です'); return; }
+                    if (amount < 0 || amount > currentMaxBid) { alert('入札価格が不正です'); return; }
                     
                     if (!confirm(`${projects[proj].name} に ${amount}Y で入札しますか？`)) {
                         return;
@@ -1600,8 +1620,8 @@
                 fallbackProjs.forEach(proj => {
                     let max = projects[proj].maxBid;
                     finalActions.push({ project: proj, amount: max, prob: 0.1 });
-                    finalActions.push({ project: proj, amount: max - 10, prob: 0.2 });
-                    finalActions.push({ project: proj, amount: max - 30, prob: 0.2 });
+                    finalActions.push({ project: proj, amount: max - 2, prob: 0.2 });
+                    finalActions.push({ project: proj, amount: max - 5, prob: 0.2 });
                 });
                 finalActions.push({ project: 'none', amount: 0, prob: 0.3 });
             } else {
@@ -1620,10 +1640,10 @@
                         return;
                     }
                     finalActions.push({ project: baseAct.project, amount: baseAct.amount, prob: baseProb * 0.5 });
-                    if (baseAct.amount >= 5) finalActions.push({ project: baseAct.project, amount: baseAct.amount - 5, prob: baseProb * 0.3 });
+                    if (baseAct.amount >= 1) finalActions.push({ project: baseAct.project, amount: baseAct.amount - 1, prob: baseProb * 0.3 });
                     else finalActions[0].prob += baseProb * 0.3;
                     
-                    if (baseAct.amount >= 10) finalActions.push({ project: baseAct.project, amount: baseAct.amount - 10, prob: baseProb * 0.2 });
+                    if (baseAct.amount >= 2) finalActions.push({ project: baseAct.project, amount: baseAct.amount - 2, prob: baseProb * 0.2 });
                     else finalActions[0].prob += baseProb * 0.2;
                 }
                 
@@ -1739,10 +1759,12 @@
             }
             const totalActive = activeCompetitors + 1;
 
+            // ③ 要件：破産者がいたり、他社の正社員数が一定以上だったりして競合が少ないと判断できるとき、強気入札
             let hasBankrupt = state.players.some(pl => pl.bankrupt || pl.isDefaulter);
             let activeEnemies = state.players.filter((pl, idx) => idx !== playerId && !pl.bankrupt && !pl.isDefaulter);
             let enemyTotalEmps = activeEnemies.reduce((sum, pl) => sum + pl.employees, 0);
-            let lowCompetition = hasBankrupt || activeEnemies.length <= 1 || (activeEnemies.length > 0 && enemyTotalEmps >= 5);
+            // 競合が少ないと判断できる条件（破産者がいる、または他社の正社員数が少ない等、あるいは他社全体の戦力が相対的に低い）
+            let lowCompetition = hasBankrupt || activeEnemies.length <= 1 || (activeEnemies.length > 0 && enemyTotalEmps >= 5); // 正社員数が一定以上（あるいは脅威が少ない）
 
             const marketTrend = { large: null, medium: null, small: null };
             const ignoreMarketTrend = (totalActive <= 3);
@@ -1751,7 +1773,7 @@
                 ['large', 'medium', 'small'].forEach(pk => {
                     const recent = currentLogs.filter(l => l.turn >= state.turn - 3 && l.is_winner && l.project_type === pk);
                     if (recent.length > 0) {
-                        marketTrend[pk] = Math.round(recent.reduce((sum, l) => sum + l.winning_bid, 0) / recent.length / 5) * 5;
+                        marketTrend[pk] = Math.round(recent.reduce((sum, l) => sum + l.winning_bid, 0) / recent.length);
                     }
                 });
             }
@@ -1767,7 +1789,7 @@
                         const avgWinningBid = recentLogs.reduce((sum, l) => sum + l.winning_bid, 0) / recentLogs.length;
 
                         if (consistentlyWonBySame && winnerId !== playerId && avgWinningBid >= projects[projKey].maxBid * 0.8) {
-                            let snipeAmount = Math.max(0, Math.floor((avgWinningBid - 5) / 5) * 5);
+                            let snipeAmount = Math.max(0, Math.floor(avgWinningBid - 1));
                             hyenaTargets.push({ project: projKey, targetPrice: snipeAmount, victimId: winnerId });
                         }
                     }
@@ -1806,26 +1828,26 @@
                 else if (strategy === 'fulltime') additionalCost = c.full;
                 else additionalCost = Math.min(c.full, c.temp); 
                 
-                let breakEven = Math.ceil(additionalCost / 5) * 5;
+                let breakEven = Math.ceil(additionalCost);
                 
                 let candidateAmounts = new Set();
-                for (let b = maxBid; b >= breakEven; b -= 5) {
+                for (let b = maxBid; b >= breakEven; b -= 1) {
                     candidateAmounts.add(b);
                 }
                 
                 if (marketTrend[projKey] !== null) {
                     candidateAmounts.add(marketTrend[projKey]);
-                    candidateAmounts.add(marketTrend[projKey] - 5);
-                    candidateAmounts.add(marketTrend[projKey] - 10);
-                    candidateAmounts.add(marketTrend[projKey] + 5);
+                    candidateAmounts.add(marketTrend[projKey] - 1);
+                    candidateAmounts.add(marketTrend[projKey] - 2);
+                    candidateAmounts.add(marketTrend[projKey] + 1);
                 }
 
                 scenarios.forEach(sc => {
                     sc.actions.forEach(act => {
                         if (act.project === projKey) {
                             candidateAmounts.add(act.amount);
-                            if (act.amount >= 5) candidateAmounts.add(act.amount - 5);
-                            if (act.amount >= 10) candidateAmounts.add(act.amount - 10);
+                            if (act.amount >= 1) candidateAmounts.add(act.amount - 1);
+                            if (act.amount >= 2) candidateAmounts.add(act.amount - 2);
                         }
                     });
                 });
@@ -1841,7 +1863,7 @@
                 }
 
                 candidateAmounts.forEach(myBid => {
-                    myBid = Math.max(0, Math.min(maxBid, Math.round(myBid / 5) * 5));
+                    myBid = Math.max(0, Math.min(maxBid, Math.round(myBid)));
                     if (myBid < breakEven) return; 
 
                     let winProbability = 0;
@@ -1891,16 +1913,19 @@
                     let marginalProfit = myBid - additionalCost; 
                     let netProfit = marginalProfit - fixedCost; 
                     
+                    // ① 要件：邪魔プレイによって（または邪魔プレイの失敗によって）自分が破産する時、邪魔プレイしない
                     let myNextMoney = p.money + netProfit;
                     let isHarmfulSabotage = (marginalProfit <= 0 && myNextMoney < 0);
                     if (isHarmfulSabotage) {
+                        // 邪魔プレイ（赤字特攻）により自分が破産する場合は邪魔プレイを絶対しない（EVを極小にする）
                         candidateActions.push({ project: projKey, amount: myBid, ev: -99999 });
                         return;
                     }
 
+                    // ② 要件：邪魔プレイの精度を上げる（相手へのダメージが確実、または成功見込みが高い場合のみ有効にする）
                     let refinedAssassinationValue = assassinationValue;
                     if (marginalProfit <= 0 && assassinationValue < 2000) {
-                        refinedAssassinationValue *= 0.2; 
+                        refinedAssassinationValue *= 0.2; // 失敗リスク・効果薄の邪魔プレイを抑制
                     }
 
                     let baseEV = marginalProfit * winProbability; 
@@ -1914,7 +1939,9 @@
                         adjustedEV += Math.max(0, marginalProfit * 0.5);
                     }
 
+                    // ③ 要件：競合が少ないと判断できるとき、強気入札
                     if (lowCompetition) {
+                        // 競合が少ないため、価格を低くしすぎず上限付近（強気）で落札して利益を最大化する
                         let highBidBonus = (myBid >= maxBid - 50) ? (marginalProfit * 0.6) : 0;
                         adjustedEV += highBidBonus;
                     }
@@ -1956,12 +1983,12 @@
                                 let eCost = cpuLabourCost(state, eIdx, projKey);
                                 let eMinCost = Math.min(eCost.full, eCost.temp); 
                                 let eAssassinationTolerance = Math.min(enemy.money, 100); 
-                                let eSuicideBid = Math.max(0, Math.ceil((eMinCost - eAssassinationTolerance) / 5) * 5);
+                                let eSuicideBid = Math.max(0, Math.ceil(eMinCost - eAssassinationTolerance));
                                 if (eSuicideBid < minEnemySuicideBid) minEnemySuicideBid = eSuicideBid;
                             }
                         }
 
-                        let fearfulBid = (expectedHostileBid !== Infinity) ? expectedHostileBid - 5 : maxBid;
+                        let fearfulBid = (expectedHostileBid !== Infinity) ? expectedHostileBid - 1 : maxBid;
                         let targetBid = Math.min(fearfulBid, minEnemySuicideBid);
                         targetBid = Math.max(breakEven, targetBid);
 
@@ -2231,7 +2258,7 @@
                         if (!action || !['none', 'large', 'medium', 'small'].includes(action.project)) { action = { project: 'none', amount: 0 }; }
                         if (action.project !== 'none') {
                             const currentMaxBid = projects[action.project].maxBid;
-                            action.amount = Math.max(0, Math.min(currentMaxBid, Math.round(Number(action.amount) / 5) * 5));
+                            action.amount = Math.max(0, Math.min(currentMaxBid, Math.round(Number(action.amount))));
                         } else { action.amount = 0; }
                         bidInputs[i] = action;
                         await new Promise(resolve => setTimeout(resolve, 20));
@@ -2251,7 +2278,7 @@
             if (allReady) {
                 resultConfirmations = {}; 
                 if (onlineChannel) {
-                    await onlineChannel.send({ type: 'broadcast', event: 'start_hiring_phase', payload: {} });
+                    await onlineChannel.send({ type: 'broadcast', event: 'start_hiring_phase', payload: { turn: currentTurn } });
                 }
                 startHiringPhase();
             }
@@ -2291,7 +2318,7 @@
                 }
 
                 if (onlineChannel) {
-                    await onlineChannel.send({ type: 'broadcast', event: 'all_hiring_completed', payload: { hiringInputs: hiringInputs } });
+                    await onlineChannel.send({ type: 'broadcast', event: 'all_hiring_completed', payload: { hiringInputs: hiringInputs, turn: currentTurn } });
                 }
                 
                 hideCalculatingModal();
@@ -2325,7 +2352,7 @@
             for (const pKey of ['large', 'medium', 'small']) {
                 const bids = projBids[pKey]; let htmlContent = '';
                 if (bids.length === 0) { 
-                    htmlContent = `<span class="text-slate-500 font-bold bg-slate-900 px-2 py-0.5 rounded text-xs">落札者なし</span>`; 
+                    htmlContent = `<span class="text-slate-400 font-bold bg-slate-100 px-3 py-1 rounded text-sm">落札者なし</span>`; 
                     resultsData[pKey] = { winnerId: -1, amount: null }; 
                     updateProjectChart(pKey, null, currentEconomy, null); 
                 } 
@@ -2338,7 +2365,7 @@
                     updateProjectChart(pKey, minBid, currentEconomy, avgData[pKey]);
                     
                     const pName = players[winnerId].name, isMe = winnerId === myPlayerIndex;
-                    htmlContent = `<div class="flex-1"><div class="${isMe ? 'text-blue-400 font-black' : 'text-slate-200 font-bold'} text-xs">${isMe ? '👤' : '🤖'} ${pName}</div>${isRandom ? '<div class="text-[9px] text-amber-400 bg-amber-950/60 inline-block px-1 rounded border border-amber-900/50 mt-0.5">🎲 抽選</div>' : ''}</div><div class="font-black text-sm sm:text-base text-emerald-400 font-mono text-right shrink-0">${minBid}<span class="text-xs text-emerald-600">Y</span></div>`;
+                    htmlContent = `<div class="flex-1"><div class="${isMe ? 'text-blue-700 font-black' : 'text-slate-700 font-bold'}">${isMe ? '👤' : '🤖'} ${pName}</div>${isRandom ? '<div class="text-[10px] text-amber-600 bg-amber-50 inline-block px-1 rounded border border-amber-200 mt-0.5">🎲 抽選で決定</div>' : ''}</div><div class="font-black text-xl text-emerald-600 font-mono text-right shrink-0">${minBid}<span class="text-sm text-emerald-800">Y</span></div>`;
                 }
                 document.getElementById(`res-${pKey}-content`).innerHTML = htmlContent;
             }
@@ -2387,7 +2414,7 @@
             if (isOnlineMode) {
                 showCalculatingModal('待機中...', '他のプレイヤーの確認を待っています。');
                 if (myPlayerIndex !== 0) {
-                    await onlineChannel.send({ type: 'broadcast', event: 'result_confirmed', payload: { playerIndex: myPlayerIndex } });
+                    await onlineChannel.send({ type: 'broadcast', event: 'result_confirmed', payload: { playerIndex: myPlayerIndex, turn: currentTurn } });
                 } else {
                     await handleResultConfirmed(0);
                 }
@@ -2402,7 +2429,7 @@
                 title.textContent = `${projects[projKey].name} 同額入札！`; desc.textContent = bidders.map(b => players[b.playerId].name).join(' vs ') + ` (${amount}Y)`; resText.textContent = '抽選中...'; modal.classList.remove('hidden');
                 wheel.style.animation = 'none'; wheel.offsetHeight; wheel.style.animation = 'spinRoulette 2s cubic-bezier(0.25, 1, 0.5, 1) forwards';
                 
-                setTimeout(() => { const winner = bidders[Math.floor(currentTieBreaker[projKey] * bidders.length)]; resText.textContent = `🎊 ${players[winner.playerId].name} !!`; setTimeout(() => { modal.classList.add('hidden'); resolve(winner.playerId); }, 1200); }, 2000);
+                setTimeout(() => { const winner = bidders[Math.floor(currentTieBreaker[projKey] * bidders.length)]; resText.textContent = `🎊 ${players[winner.playerId].name} !!`; setTimeout(() => { modal.classList.add('hidden'); resolve(winner.playerId); }, 1500); }, 2000);
             });
         }
 
@@ -2418,12 +2445,12 @@
                 const shortageLabor = Math.max(0, reqLabor - currentLabor);
 
                 document.getElementById('hiring-info').innerHTML = `
-                    <div class="flex justify-between items-center border-b border-slate-800 pb-1 mb-1"><span class="text-slate-400 font-bold">落札</span><span class="font-black text-white">${proj.name}</span></div>
-                    <div class="flex justify-between items-center mb-1"><span class="text-slate-400">必要人数</span><span class="font-black text-rose-400">${reqLabor}人</span></div>
-                    <div class="flex justify-between items-center mb-1"><span class="text-slate-400">現在提供可能</span><span class="font-black text-blue-400">${currentLabor}人</span></div>
-                    <div class="flex justify-between items-center mt-1.5 pt-1 border-t border-slate-800 bg-rose-950/30 px-2 py-1 rounded">
-                        <span class="font-bold text-rose-300">不足分</span>
-                        <span class="font-black text-rose-400 text-sm">${shortageLabor}人</span>
+                    <div class="flex justify-between items-center border-b pb-1 mb-1"><span class="text-slate-500 font-bold">落札</span><span class="font-black text-slate-800">${proj.name}</span></div>
+                    <div class="flex justify-between items-center mb-1"><span class="text-slate-500">必要人数</span><span class="font-black text-rose-600">${reqLabor}人</span></div>
+                    <div class="flex justify-between items-center mb-1"><span class="text-slate-500">現在提供可能</span><span class="font-black text-blue-600">${currentLabor}人</span></div>
+                    <div class="flex justify-between items-center mt-2 pt-1 border-t bg-rose-50 px-2 py-1 rounded">
+                        <span class="font-bold text-rose-800">不足分</span>
+                        <span class="font-black text-rose-700 text-lg">${shortageLabor}人</span>
                     </div>`;
                 
                 hireForm.classList.remove('hidden');
@@ -2442,7 +2469,7 @@
                     slider.value = 0;
                     slider.min = 0;
                     slider.max = 0;
-                    slider.style.background = '#334155';
+                    slider.style.background = '#e2e8f0';
                     valFull.innerHTML = `👨‍💼 正社員: 0`;
                     valTemp.innerHTML = `👷 発注: 0`;
                     profitDisplay.textContent = `${p.amount - (players[myPlayerIndex].employees * fCost)}Y`;
@@ -2461,8 +2488,8 @@
                         const remain = Math.max(0, shortageLabor - covered);
                         const tAdd = Math.ceil(remain / laborConfig.tempP);
                         
-                        valFull.innerHTML = `👨‍💼 正社員: <span class="text-sm">${fAdd}</span>`;
-                        valTemp.innerHTML = `👷 発注: <span class="text-sm">${tAdd}</span>`;
+                        valFull.innerHTML = `👨‍‍💼 正社員: <span class="text-lg">${fAdd}</span>`;
+                        valTemp.innerHTML = `👷 発注: <span class="text-lg">${tAdd}</span>`;
                         
                         const estProfit = p.amount - (players[myPlayerIndex].employees * fCost) - (fAdd * tCost) - (tAdd * tCost);
                         profitDisplay.textContent = `${estProfit}Y`;
@@ -2501,7 +2528,7 @@
                 showCalculatingModal('待機中...', '他のプレイヤーの操作を待っています。');
                 
                 if (myPlayerIndex !== 0) {
-                    await onlineChannel.send({ type: 'broadcast', event: 'hiring_completed', payload: { playerIndex: myPlayerIndex, hire: myHire } });
+                    await onlineChannel.send({ type: 'broadcast', event: 'hiring_completed', payload: { playerIndex: myPlayerIndex, hire: myHire, turn: currentTurn } });
                 } else {
                     await handleHiringCompleted(0, myHire);
                 }
@@ -2740,18 +2767,18 @@
             const tpTitle = document.getElementById('tp-title');
             
             if (currentTurn === totalTurns) {
-                tpTitle.innerHTML = `<span class="text-red-400">最終ターン</span> 収益結果`;
+                tpTitle.innerHTML = `<span class="text-red-600">最終ターン</span> 収益結果`;
             } else {
                 tpTitle.innerHTML = `第 <span id="tp-turn">${currentTurn}</span> ターン 収益結果`;
             }
 
             const content = document.getElementById('tp-content');
             content.innerHTML = turnProfits.map(p => {
-                const color = p.profit > 0 ? 'text-emerald-400' : (p.profit < 0 ? 'text-red-400' : 'text-slate-300');
+                const color = p.profit > 0 ? 'text-emerald-600' : (p.profit < 0 ? 'text-red-600' : 'text-slate-700');
                 const sign = p.profit > 0 ? '+' : '';
-                return `<div class="flex justify-between items-center p-2 rounded-lg bg-slate-950 border border-slate-800">
-                    <span class="font-bold text-slate-300 text-xs">${p.name}</span>
-                    <span class="font-black text-sm ${color}">${sign}${p.profit}Y</span>
+                return `<div class="flex justify-between items-center p-2 rounded-lg bg-slate-50 border border-slate-200">
+                    <span class="font-bold text-slate-700 text-sm">${p.name}</span>
+                    <span class="font-black text-lg ${color}">${sign}${p.profit}Y</span>
                 </div>`;
             }).join('');
             
@@ -2822,29 +2849,27 @@
             container.innerHTML = '';
 
             sorted.forEach((p, index) => {
-                const isMe = p.id === myPlayerIndex, isBankrupt = p.money < 0; 
-                const bg = index === 0 ? 'bg-gradient-to-r from-yellow-950/60 to-slate-900 border-2 border-yellow-500/80 shadow-md' : 'bg-slate-950 border border-slate-800'; 
-                const rankText = index === 0 ? '🏆 1位' : (index === 1 ? '🥈 2位' : (index === 2 ? '🥉 3位' : '4位'));
-                container.innerHTML += `<div class="flex justify-between items-center p-3 rounded-xl ${bg} ${isMe ? 'ring-2 ring-blue-500' : ''} ${isBankrupt ? 'opacity-60' : ''}"><div class="text-base font-black flex items-center gap-2"><span>${rankText}</span><span class="text-sm ${isMe ? 'text-blue-400' : 'text-slate-200'}">${p.name}</span>${isBankrupt ? '<span class="text-[9px] bg-red-600 text-white px-1.5 py-0.5 rounded-full font-bold ml-1">破産</span>' : ''}</div><div class="text-2xl font-black font-mono tracking-tighter ${p.money < 0 ? 'text-red-400' : 'text-white'}">${p.money}<span class="text-xs">Y</span></div></div>`;
+                const isMe = p.id === myPlayerIndex, isBankrupt = p.money < 0; const bg = index === 0 ? 'bg-gradient-to-r from-yellow-100 to-amber-50 border-2 border-yellow-300 shadow-md scale-105 z-10' : 'bg-slate-50 border border-slate-200'; const rankText = index === 0 ? '🏆 1位' : (index === 1 ? '🥈 2位' : (index === 2 ? '🥉 3位' : '4位'));
+                container.innerHTML += `<div class="flex justify-between items-center p-4 rounded-xl ${bg} ${isMe ? 'ring-2 ring-blue-400' : ''} ${isBankrupt ? 'opacity-60' : ''}"><div class="text-xl font-black flex items-center gap-2"><span>${rankText}</span><span class="text-lg ${isMe ? 'text-blue-700' : 'text-slate-700'}">${p.name}</span>${isBankrupt ? '<span class="text-[10px] bg-red-600 text-white px-2 py-1 rounded-full font-bold ml-1">破産</span>' : ''}</div><div class="text-3xl font-black font-mono tracking-tighter ${p.money < 0 ? 'text-red-600' : 'text-slate-800'}">${p.money}<span class="text-lg">Y</span></div></div>`;
             });
 
-            const historyBtnHtml = `<button onclick="showAllHistoryGraph()" class="w-full bg-teal-600 hover:bg-teal-500 active:scale-95 text-white font-bold py-2.5 px-4 rounded-xl shadow border-b-4 border-teal-800 transition-all mb-1.5 flex justify-center items-center gap-2 text-xs"><span>📈</span> 全プレイヤーの所持金推移</button>`;
+            const historyBtnHtml = `<button onclick="showAllHistoryGraph()" class="w-full bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-black text-lg py-3 px-6 rounded-xl shadow border-b-4 border-teal-800 transition-all mb-2 flex justify-center items-center gap-2"><span>📈</span> 全プレイヤーの所持金推移</button>`;
 
             if (isOnlineMode) {
                 if (myPlayerIndex === 0) {
                     rankingButtonsContainer.innerHTML = historyBtnHtml + `
-                        <button onclick="returnToLobby()" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold py-3 px-4 rounded-xl shadow-lg border-b-4 border-blue-800 transition-all text-xs">🔄 もう一度遊ぶ（同じルームで）</button>
-                        <button onclick="leaveRoomAndGoHome()" class="w-full bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-bold py-3 px-4 rounded-xl shadow-lg border-b-4 border-rose-800 transition-all mt-1 text-xs">🏠 ホームに戻る（退出）</button>
+                        <button onclick="returnToLobby()" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-black text-lg py-4 px-6 rounded-xl shadow-lg border-b-4 border-blue-900 transition-all">🔄 もう一度遊ぶ（同じルームで）</button>
+                        <button onclick="leaveRoomAndGoHome()" class="w-full bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-black text-lg py-4 px-6 rounded-xl shadow-lg border-b-4 border-rose-900 transition-all mt-2">🏠 ホームに戻る（退出）</button>
                     `;
                 } else {
                     rankingButtonsContainer.innerHTML = historyBtnHtml + `
-                        <div class="text-center text-[11px] font-bold text-slate-400 p-2 bg-slate-950 rounded border border-slate-800 mt-1">ホストが「もう一度遊ぶ」を選択するのを待機しています...</div>
-                        <button onclick="leaveRoomAndGoHome()" class="w-full bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-bold py-3 px-4 rounded-xl shadow-lg border-b-4 border-rose-800 transition-all mt-1 text-xs">🏠 ホームに戻る（退出）</button>
+                        <div class="text-center text-sm font-bold text-slate-500 p-2 bg-slate-100 rounded border border-slate-200 mt-2">ホストが「もう一度遊ぶ」を選択するのを待機しています...</div>
+                        <button onclick="leaveRoomAndGoHome()" class="w-full bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-black text-lg py-4 px-6 rounded-xl shadow-lg border-b-4 border-rose-900 transition-all mt-2">🏠 ホームに戻る（退出）</button>
                     `;
                 }
             } else {
                 rankingButtonsContainer.innerHTML = historyBtnHtml + `
-                    <button onclick="location.reload()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold py-3 px-4 rounded-xl shadow-lg border-b-4 border-indigo-800 transition-all text-xs">🔄 もう一度プレイする</button>
+                    <button onclick="location.reload()" class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-black text-lg py-4 px-6 rounded-xl shadow-lg border-b-4 border-indigo-900 transition-all">🔄 もう一度プレイする</button>
                 `;
             }
 
@@ -2931,7 +2956,7 @@
             joinTempId = Math.random().toString(36).substring(2);
             
             const btn = document.getElementById('join-btn-text');
-            if (btn) btn.textContent = '接続中...';
+            if (btn) btn.textContent = 'ホストへ接続中...';
 
             initRealtimeChannel(onlineRoomId, () => {
                 onlineChannel.send({ 
@@ -2943,9 +2968,9 @@
             
             setTimeout(() => {
                 if (isWaitingToJoin) {
-                    alert('ルームが見つからないか、ホストの応答が遅延しています。再度お試しください。');
+                    alert('ルームが見つからないか、ホストの通信応答が遅延しています。再度お試しください。');
                     isWaitingToJoin = false;
-                    if (btn) btn.textContent = '参加';
+                    if (btn) btn.textContent = 'ルームに参加';
                 }
             }, 10000); 
         };
@@ -2953,7 +2978,7 @@
         function updateMemberCountDisplay(count) {
             const countEl = document.getElementById('room-member-count');
             if (countEl) {
-                countEl.textContent = `参加者: ${count} / 4人`;
+                countEl.textContent = `参加メンバー: ${count} / 4人`;
             }
         }
 
@@ -2967,7 +2992,7 @@
 
             onlineChannel
                 .on('broadcast', { event: 'room_closed' }, payload => {
-                    alert('ホストがルームを閉じました。ロビーに戻ります。');
+                    alert('ホストがルームを削除したか、別のルームを作成しました。ロビーに戻ります。');
                     if (periodicSyncTimer) clearInterval(periodicSyncTimer);
                     if (onlineChannel) {
                         supabaseClient.removeChannel(onlineChannel);
@@ -2977,7 +3002,7 @@
                     document.getElementById('start-game-container').classList.remove('hidden');
                     document.getElementById('lobby-modal').classList.remove('hidden');
                     const btn = document.getElementById('join-btn-text');
-                    if (btn) btn.textContent = '参加';
+                    if (btn) btn.textContent = 'ルームに参加';
                 })
                 .on('broadcast', { event: 'player_left' }, async payload => {
                     if (myPlayerIndex === 0) {
@@ -3077,9 +3102,9 @@
                         document.getElementById('lobby-modal').classList.add('hidden');
                         
                         const btn = document.getElementById('join-btn-text');
-                        if (btn) btn.textContent = '参加';
+                        if (btn) btn.textContent = 'ルームに参加';
                         
-                        alert(`ルーム ${onlineRoomId} に参加しました！ホストの開始をお待ちください。`);
+                        alert(`ルーム ${onlineRoomId} に参加しました！ホストのターン開始をお待ちください。`);
                         activeRoomMembers = players.filter(p => !p.isCPU).length;
                         updateMemberCountDisplay(activeRoomMembers);
                         renderPlayers();
@@ -3138,7 +3163,8 @@
                     }
                 })
                 .on('broadcast', { event: 'player_bid' }, async payload => {
-                    const { playerIndex, bid } = payload.payload;
+                    const { playerIndex, bid, turn } = payload.payload;
+                    if (turn && turn !== currentTurn) return; // ターン検証：過去/未来の通信は破棄
                     bidInputs[playerIndex] = bid;
                     if (myPlayerIndex === 0) {
                         await checkAndTriggerProcessBids();
@@ -3146,30 +3172,40 @@
                 })
                 .on('broadcast', { event: 'all_bids_determined' }, payload => {
                     if (myPlayerIndex !== 0) {
-                        bidInputs = payload.payload.bids;
-                        currentTieBreaker = payload.payload.tieBreaker;
+                        const { bids, tieBreaker, turn } = payload.payload;
+                        if (turn && turn !== currentTurn) return; // ターン検証
+                        bidInputs = bids;
+                        currentTieBreaker = tieBreaker;
                         hideCalculatingModal();
                         processBids();
                     }
                 })
                 .on('broadcast', { event: 'result_confirmed' }, async payload => {
                     if (myPlayerIndex === 0) {
-                        await handleResultConfirmed(payload.payload.playerIndex);
+                        const { playerIndex, turn } = payload.payload;
+                        if (turn && turn !== currentTurn) return; // ターン検証
+                        await handleResultConfirmed(playerIndex);
                     }
                 })
                 .on('broadcast', { event: 'start_hiring_phase' }, payload => {
                     if (myPlayerIndex !== 0) {
+                        const { turn } = payload.payload;
+                        if (turn && turn !== currentTurn) return; // ターン検証
                         startHiringPhase();
                     }
                 })
                 .on('broadcast', { event: 'hiring_completed' }, async payload => {
                     if (myPlayerIndex === 0) {
-                        await handleHiringCompleted(payload.payload.playerIndex, payload.payload.hire);
+                        const { playerIndex, hire, turn } = payload.payload;
+                        if (turn && turn !== currentTurn) return; // ターン検証
+                        await handleHiringCompleted(playerIndex, hire);
                     }
                 })
                 .on('broadcast', { event: 'all_hiring_completed' }, payload => {
                     if (myPlayerIndex !== 0) {
-                        const hInputs = payload.payload.hiringInputs;
+                        const { hiringInputs, turn } = payload.payload;
+                        if (turn && turn !== currentTurn) return; // ターン検証
+                        const hInputs = hiringInputs;
                         for (let i = 0; i < 4; i++) {
                             if (hInputs[i]) {
                                 players[i].employees += hInputs[i].f;
@@ -3183,13 +3219,16 @@
                 })
                 .on('broadcast', { event: 'start_coin_toss' }, async payload => {
                     if (myPlayerIndex !== 0) {
-                        currentTurn = payload.payload.turn;
+                        const { turn, economy } = payload.payload;
+                        if (turn && turn < currentTurn) return; // 古いターンの開始合図を無視
+                        
+                        currentTurn = turn;
                         const turnDisplayNode = document.getElementById('turn-display');
                         if (turnDisplayNode) turnDisplayNode.textContent = currentTurn;
                         
                         document.getElementById('turn-profit-modal').classList.add('hidden');
 
-                        await playCoinTossAnimation(payload.payload.economy);
+                        await playCoinTossAnimation(economy);
                     }
                 })
                 .on('broadcast', { event: 'start_game' }, async payload => {
@@ -3258,7 +3297,7 @@
                         if (!action || !['none', 'large', 'medium', 'small'].includes(action.project)) { action = { project: 'none', amount: 0 }; }
                         if (action.project !== 'none') {
                             const currentMaxBid = projects[action.project].maxBid;
-                            action.amount = Math.max(0, Math.min(currentMaxBid, Math.round(Number(action.amount) / 5) * 5));
+                            action.amount = Math.max(0, Math.min(currentMaxBid, Math.round(Number(action.amount))));
                         } else { action.amount = 0; }
                         bidInputs[i] = action;
                     }
@@ -3270,7 +3309,7 @@
                     await onlineChannel.send({
                         type: 'broadcast',
                         event: 'all_bids_determined',
-                        payload: { bids: bidInputs, tieBreaker: currentTieBreaker }
+                        payload: { bids: bidInputs, tieBreaker: currentTieBreaker, turn: currentTurn }
                     });
                 }
 
