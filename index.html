@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>入札ゲーム ver.145② </title>
+    <title>入札ゲーム ver.146②</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -124,7 +124,7 @@
 
     <header class="bg-slate-800 text-white p-3 shadow-md flex justify-between items-center z-[85] shrink-0">
         <div class="flex items-center gap-3">
-            <h1 class="text-xl font-bold">入札 ver.145② <span class="text-sm font-normal ml-2">第 <span id="turn-display" class="text-yellow-400 font-bold text-2xl">1</span> / <span id="total-turn-display">10</span> ターン</span></h1>
+            <h1 class="text-xl font-bold">入札 ver.146② <span class="text-sm font-normal ml-2">第 <span id="turn-display" class="text-yellow-400 font-bold text-2xl">1</span> / <span id="total-turn-display">10</span> ターン</span></h1>
             <button id="room-badge" class="hidden px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded text-xs font-bold text-white shadow border border-indigo-500 transition-colors" onclick="if(myPlayerIndex === 0) document.getElementById('lobby-modal').classList.remove('hidden')">🏠 ルーム: <span id="current-room-id-display">---</span></button>
             <div id="ai-status" class="hidden px-2 py-1 bg-emerald-500 rounded text-xs font-bold shadow animate-pulse">🤖 データ学習済</div>
             
@@ -1430,7 +1430,16 @@
             }
         }
 
-        function prepareBidding() { isBiddingPhase = true; bidForm.classList.remove('hidden'); document.getElementById('bidding-inputs').classList.add('hidden'); selectedBiddingProject = 'none'; }
+        // 入札フェーズ開始時にフラグを確実に初期化
+        function prepareBidding() { 
+            isBiddingPhase = true; 
+            bidInputs = {}; 
+            isProcessingBids = false;
+            
+            bidForm.classList.remove('hidden'); 
+            document.getElementById('bidding-inputs').classList.add('hidden'); 
+            selectedBiddingProject = 'none'; 
+        }
         
         window.selectProject = function(projKey) {
             if (!isBiddingPhase) return;
@@ -1680,7 +1689,7 @@
                 
                 if (currentP > reqP) {
                     let waste = currentP - reqP;
-                    if (waste >= 5) act.prob *= 0.001;      
+                    if (waste >= 5) act.prob *= 0.001;     
                     else if (waste >= 3) act.prob *= 0.05;  
                     else if (waste >= 1) act.prob *= 0.3;   
                 }
@@ -1759,12 +1768,10 @@
             }
             const totalActive = activeCompetitors + 1;
 
-            // ③ 要件：破産者がいたり、他社の正社員数が一定以上だったりして競合が少ないと判断できるとき、強気入札
             let hasBankrupt = state.players.some(pl => pl.bankrupt || pl.isDefaulter);
             let activeEnemies = state.players.filter((pl, idx) => idx !== playerId && !pl.bankrupt && !pl.isDefaulter);
             let enemyTotalEmps = activeEnemies.reduce((sum, pl) => sum + pl.employees, 0);
-            // 競合が少ないと判断できる条件（破産者がいる、または他社の正社員数が少ない等、あるいは他社全体の戦力が相対的に低い）
-            let lowCompetition = hasBankrupt || activeEnemies.length <= 1 || (activeEnemies.length > 0 && enemyTotalEmps >= 5); // 正社員数が一定以上（あるいは脅威が少ない）
+            let lowCompetition = hasBankrupt || activeEnemies.length <= 1 || (activeEnemies.length > 0 && enemyTotalEmps >= 5); 
 
             const marketTrend = { large: null, medium: null, small: null };
             const ignoreMarketTrend = (totalActive <= 3);
@@ -1913,19 +1920,16 @@
                     let marginalProfit = myBid - additionalCost; 
                     let netProfit = marginalProfit - fixedCost; 
                     
-                    // ① 要件：邪魔プレイによって（または邪魔プレイの失敗によって）自分が破産する時、邪魔プレイしない
                     let myNextMoney = p.money + netProfit;
                     let isHarmfulSabotage = (marginalProfit <= 0 && myNextMoney < 0);
                     if (isHarmfulSabotage) {
-                        // 邪魔プレイ（赤字特攻）により自分が破産する場合は邪魔プレイを絶対しない（EVを極小にする）
                         candidateActions.push({ project: projKey, amount: myBid, ev: -99999 });
                         return;
                     }
 
-                    // ② 要件：邪魔プレイの精度を上げる（相手へのダメージが確実、または成功見込みが高い場合のみ有効にする）
                     let refinedAssassinationValue = assassinationValue;
                     if (marginalProfit <= 0 && assassinationValue < 2000) {
-                        refinedAssassinationValue *= 0.2; // 失敗リスク・効果薄の邪魔プレイを抑制
+                        refinedAssassinationValue *= 0.2; 
                     }
 
                     let baseEV = marginalProfit * winProbability; 
@@ -1939,9 +1943,7 @@
                         adjustedEV += Math.max(0, marginalProfit * 0.5);
                     }
 
-                    // ③ 要件：競合が少ないと判断できるとき、強気入札
                     if (lowCompetition) {
-                        // 競合が少ないため、価格を低くしすぎず上限付近（強気）で落札して利益を最大化する
                         let highBidBonus = (myBid >= maxBid - 50) ? (marginalProfit * 0.6) : 0;
                         adjustedEV += highBidBonus;
                     }
@@ -2284,7 +2286,11 @@
             }
         }
 
+        // 雇用フェーズ開始時にフラグを確実に初期化
         function startHiringPhase() {
+            hiringInputs = {}; 
+            isProcessingHiring = false;
+            
             hideCalculatingModal();
             proceedToHiring();
         }
@@ -2750,11 +2756,7 @@
                 pendingGameLogs.push(detailedLog);
             }
 
-            bidInputs = {};
-            hiringInputs = {}; 
-            
-            isProcessingBids = false;
-            isProcessingHiring = false;
+            // フラグのクリアは各フェーズの「開始時」に移動しました
             
             renderPlayers();
             const allBankrupt = players.every(p => p.isDefaulter);
@@ -3012,8 +3014,7 @@
                         activeRoomMembers = players.filter(p => !p.isCPU).length;
                         updateMemberCountDisplay(activeRoomMembers);
                         renderPlayers();
-                        await onlineChannel.send({ type: 'broadcast', event: 'state_sync', payload: { snapshot: players, currentTurn: currentTurn } });
-
+                        
                         checkAndTriggerProcessBids();
                         await handleResultConfirmed(playerIndex);
                         await handleHiringCompleted(playerIndex, {f:0, t:0});
@@ -3110,28 +3111,9 @@
                         renderPlayers();
                     }
                 })
+                // state_sync は無効化しているため、ここでは受け取っても何もしないか、安全に処理する
                 .on('broadcast', { event: 'state_sync' }, payload => {
-                    if (isOnlineMode && myPlayerIndex !== 0) {
-                        const { snapshot, currentTurn: syncTurn } = payload.payload;
-                        for (let i = 0; i < 4; i++) {
-                            players[i].name = snapshot[i].name;
-                            players[i].isCPU = snapshot[i].isCPU;
-                            if (snapshot[i].money !== undefined) players[i].money = snapshot[i].money;
-                            if (snapshot[i].employees !== undefined) players[i].employees = snapshot[i].employees;
-                            if (snapshot[i].temps !== undefined) players[i].temps = snapshot[i].temps;
-                            if (snapshot[i].isDefaulter !== undefined) players[i].isDefaulter = snapshot[i].isDefaulter;
-                        }
-
-                        if (syncTurn && syncTurn !== currentTurn) {
-                            currentTurn = syncTurn;
-                            const turnDisplayNode = document.getElementById('turn-display');
-                            if (turnDisplayNode) turnDisplayNode.textContent = currentTurn;
-                        }
-
-                        activeRoomMembers = players.filter(p => !p.isCPU).length;
-                        updateMemberCountDisplay(activeRoomMembers);
-                        renderPlayers();
-                    }
+                    // フェーズ間の状態破壊を防ぐため、強制上書きは行わない
                 })
                 .on('broadcast', { event: 'game_settings_updated' }, payload => {
                     if (isOnlineMode && myPlayerIndex !== 0) {
@@ -3253,15 +3235,8 @@
 
         function startPeriodicSync() {
             if (periodicSyncTimer) clearInterval(periodicSyncTimer);
-            periodicSyncTimer = setInterval(async () => {
-                if (isOnlineMode && onlineChannel && myPlayerIndex === 0) {
-                    await onlineChannel.send({
-                        type: 'broadcast',
-                        event: 'state_sync',
-                        payload: { snapshot: players, currentTurn: currentTurn }
-                    });
-                }
-            }, 3000);
+            // 同期はすべてイベントベースのペイロードに依存するため、
+            // 状態破壊を引き起こす強制的な `state_sync` のインターバル送信は無効化しています。
         }
 
         window.startOnlineGameHost = async function() {
