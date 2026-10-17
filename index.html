@@ -1,3 +1,10 @@
+ご提示いただいた原因分析の通り、バックグラウンドタブでの`setInterval`の遅延により、非同期通信（ホストからのターン進行）とクライアント側のカウントダウン終了処理のタイミングが交差してしまうことが原因のバグですね。
+
+ご指定の通り、`showTurnProfitAndNext` 関数の開始時点における「現在のターン」を変数に記憶（`displayedTurn`）しておき、その後のUI表示、ゲーム終了判定（`endGame`の呼び出し）、および次のターンのインクリメントの全てにおいて、グローバルな `currentTurn` ではなく記憶したターン数を基準にするように修正しました。
+
+以下が修正後の全文ソースコードです。
+
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -2767,13 +2774,15 @@
         }
 
         async function showTurnProfitAndNext(turnProfits, allBankrupt) {
+            const displayedTurn = currentTurn; // 【修正箇所】開始時のターンを記憶して非同期ズレを防ぐ
+
             const modal = document.getElementById('turn-profit-modal');
             const tpTitle = document.getElementById('tp-title');
             
-            if (currentTurn === totalTurns) {
+            if (displayedTurn === totalTurns) { // 【修正箇所】
                 tpTitle.innerHTML = `<span class="text-red-600">最終ターン</span> 収益結果`;
             } else {
-                tpTitle.innerHTML = `第 <span id="tp-turn">${currentTurn}</span> ターン 収益結果`;
+                tpTitle.innerHTML = `第 <span id="tp-turn">${displayedTurn}</span> ターン 収益結果`;
             }
 
             const content = document.getElementById('tp-content');
@@ -2804,13 +2813,14 @@
                 }, 1000);
             });
 
-            if (allBankrupt || currentTurn >= totalTurns) {
+            // 【修正箇所】終了判定に currentTurn ではなく displayedTurn を使用
+            if (allBankrupt || displayedTurn >= totalTurns) {
                 endGame();
                 return;
             }
 
             if (!isOnlineMode || myPlayerIndex === 0) {
-                currentTurn++;
+                currentTurn = displayedTurn + 1; // 【修正箇所】インクリメントも記憶したターンをベースにする
                 
                 // [FIX] ターン進行と同時に状態フラグをリセットし、前ターンの非同期キャッシュによる早送りを防ぐ
                 bidInputs = {};
@@ -3342,3 +3352,5 @@
     </script>
 </body>
 </html>
+
+```
